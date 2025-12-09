@@ -147,7 +147,7 @@ window.Quarto = {
 <li><label><input type="checkbox">Write your analysis in this <code>index.qmd</code></label></li>
 <li><label><input type="checkbox">Render to HTML (<code>quarto render</code> or Render button)</label></li>
 <li><label><input type="checkbox">Push HTML to your repo and enable GitHub Pages</label></li>
-<li><label><input type="checkbox">Share your site: <code>https://[your-username].github.io/simulationChallenge/</code></label></li>
+<li><label><input type="checkbox">Share your site: <code>https://raushon.github.io/simulationChallenge/</code></label></li>
 </ul>
 </div>
 </div>
@@ -218,9 +218,8 @@ Figure&nbsp;1: Generative DAG model for the investment game showing how wealth e
 <li><strong>Tails (50% probability):</strong> Balance = $30,000 × 0.6 = $18,000</li>
 </ul>
 <p><strong>Expected Value (EV):</strong> <span class="math display">\[\text{EV} = 0.5 \times \$45,000 + 0.5 \times \$18,000 = \$22,500 + \$9,000 = \$31,500\]</span></p>
-<p><strong>Conclusion:</strong> The expected value after one flip is <strong>greater than</strong> $30,000 (specifically $31,500).</p>
+<p>The expected value after one flip is <strong>greater than</strong> $30,000 (specifically $31,500).</p>
 <p><strong>Gain as percentage of buy-in:</strong> <span class="math display">\[\text{Gain} = \frac{\$31,500 - \$30,000}{\$30,000} \times 100\% = 5\%\]</span></p>
-<p>This simple analysis shows a <strong>5% expected gain</strong> per flip, which suggests the game is favorable in expectation. However, this single-flip analysis is incomplete because: - It ignores the substantial variance (risk of ending with $18,000 vs.&nbsp;$45,000) - The game is played multiple times, and the expected value calculation alone doesn’t capture the compounding nature of wins and losses over time - We need to examine the distribution of outcomes over many periods to fully assess whether to buy-in</p>
 <div id="q1-expected-value-py" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute expected value after one flip</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>buy_in <span class="op">=</span> <span class="dv">30000</span></span>
@@ -254,11 +253,23 @@ Gain: 5.0% of buy-in
 Comparison: EV $31,500 &gt; Initial $30,000</code></pre>
 </div>
 </div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Conclusion
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>As explained and discussed in the classroom, this simple analysis is incomplete because it ignores the substantial variance (risk of ending with $18,000 vs.&nbsp;$45,000) and the compounding nature of wins and losses over time. We need to examine the distribution of outcomes over many periods to fully assess whether to buy-in. Else it looks too good strategy.</p>
+</div>
+</div>
 </section>
 <section id="single-simulation-over-time-narrative-plot" class="level3">
 <h3 class="anchored" data-anchor-id="single-simulation-over-time-narrative-plot">2) Single Simulation Over Time (Narrative + Plot)</h3>
 <p>Below is a single simulated path showing how the account balance evolves over time. This simulation provides insight into the volatility and potential outcomes of the game.</p>
-<p><strong>Narrative:</strong> Starting with $30,000, each year’s coin flip dramatically affects the balance. Due to the compounding nature of the game (multiplicative rather than additive), the balance can experience exponential growth if heads come frequently, or rapid decline with multiple tails in succession. The <strong>log scale</strong> in the plot helps visualize both extreme outcomes—whether the balance grows to millions or shrinks to pennies. One simulation reveals the game’s inherent volatility: it’s not a steady path but a rollercoaster with high variability in outcomes.</p>
 <div id="cell-q2-single-sim-py" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
@@ -340,7 +351,20 @@ Maximum balance: $60,750.00
 Minimum balance: $102.10</code></pre>
 </div>
 </div>
-<p><strong>Are you happy with the outcome?</strong> This single simulation shows just one possible path out of many. Whether the outcome is “good” depends entirely on the sequence of coin flips. Given the high volatility (seen in the dramatic swings in the plot), a single run cannot determine if you should buy-in. We need many simulations to understand the full distribution of outcomes and the probability of ending with more or less than your initial $30,000 investment. The fact that losing 40% hurts more financially than gaining 50% helps (due to the compounding asymmetry) suggests the game may be riskier than the simple expected value calculation suggests.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Conclusion
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The game is very volatile as shown in the plot. Due to compounding, the balance can grow to millions or shrink to pennies.</p>
+<p><strong>Are you happy with the outcome?</strong> Definitely not. As explained my initial investment has reduced to 137.84 over 50 years. This is a very risky game. We need to further do an analysis to balance this risk.</p>
+</div>
+</div>
 </section>
 <section id="simulations-distribution-of-final-balances" class="level3">
 <h3 class="anchored" data-anchor-id="simulations-distribution-of-final-balances">3) 100 Simulations: Distribution of Final Balances</h3>
@@ -450,9 +474,19 @@ Simulation Statistics (100 runs):
   75th percentile: $33,651.47</code></pre>
 </div>
 </div>
-<p><strong>Narrative:</strong> The distribution of final balances across 100 simulations reveals a striking pattern. The histogram is highly skewed—likely dominated by a few very large wins and many moderate-to-large losses. The <strong>mean</strong> tends to be pulled up by extreme outliers (massive wins), while the <strong>median</strong> provides a more realistic “typical” outcome, often falling below the initial buy-in.</p>
-<p>This asymmetry (mean &gt; median) is a red flag: most players would lose money, but the rare big winners inflate the average. The <strong>probability of ending above the buy-in</strong> is crucial: if this probability is significantly below 50%, the game is risky despite a positive expected value. The log-scale histogram helps visualize outcomes ranging from pennies to millions, revealing the game’s extreme volatility.</p>
-<p><strong>Practical interpretation:</strong> Even if the expected value appears favorable (from the single flip analysis), most players are likely to end up worse off. Only those who get a favorable sequence of heads early in the game stand a chance of meaningful gains. This is a <strong>high-risk, high-variance gamble</strong> rather than a reliable investment strategy.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Conclusion
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Even if the expected value appears favorable (from the single flip analysis), most players are likely to end up worse off. Only those who get a favorable sequence of heads early in the game stand a chance of meaningful gains. This is a <strong>high-risk, high-variance gamble</strong> rather than a reliable investment strategy.</p>
+</div>
+</div>
 </section>
 <section id="probability-balance-30000-at-age-75-original-game" class="level3">
 <h3 class="anchored" data-anchor-id="probability-balance-30000-at-age-75-original-game">4) Probability Balance &gt; $30,000 at Age 75 (Original Game)</h3>
@@ -483,18 +517,32 @@ Simulation Statistics (100 runs):
 <span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Estimated probability of final balance &gt; $30,000: </span><span class="sc">{</span>prob_above_buyin<span class="sc">:.3f}</span><span class="ss"> (</span><span class="sc">{</span>prob_above_buyin<span class="sc">:.1%}</span><span class="ss">)"</span>)</span>
 <span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> prob_above_buyin <span class="op">&lt;</span> <span class="fl">0.5</span>:</span>
-<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Interpretation: There is a </span><span class="sc">{</span>prob_above_buyin<span class="sc">:.1%}</span><span class="ss"> chance of ending with more than your buy-in."</span>)</span>
-<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"This is less than 50%, meaning you're more likely to lose money than to gain."</span>)</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss"> There is a </span><span class="sc">{</span>prob_above_buyin<span class="sc">:.1%}</span><span class="ss"> chance of ending with more than your buy-in."</span>)</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st"> This is less than 50%, meaning you're more likely to lose money than to gain."</span>)</span>
 <span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a><span class="cf">elif</span> prob_above_buyin <span class="op">==</span> <span class="fl">0.5</span>:</span>
-<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Interpretation: Equal probability of gaining or losing from your buy-in."</span>)</span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st"> Equal probability of gaining or losing from your buy-in."</span>)</span>
 <span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
-<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Interpretation: There is a </span><span class="sc">{</span>prob_above_buyin<span class="sc">:.1%}</span><span class="ss"> chance of ending with more than your buy-in."</span>)</span>
-<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"This is greater than 50%, meaning you're more likely to gain than to lose."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss"> There is a </span><span class="sc">{</span>prob_above_buyin<span class="sc">:.1%}</span><span class="ss"> chance of ending with more than your buy-in."</span>)</span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st"> This is greater than 50%, meaning you're more likely to gain than to lose."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Estimated probability of final balance &gt; $30,000: 0.260 (26.0%)
 
-Interpretation: There is a 26.0% chance of ending with more than your buy-in.
-This is less than 50%, meaning you're more likely to lose money than to gain.</code></pre>
+ There is a 26.0% chance of ending with more than your buy-in.
+
+ This is less than 50%, meaning you're more likely to lose money than to gain.</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Conclusion
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>We have estimated the probability going 3 ways: gaining more, equal wins and loses and losing more. We can see we are more likely to lose money than to gain. Next lets modify the strategy to Bet 25% and 50% of the balance each round and compare the results.</p>
 </div>
 </div>
 </section>
@@ -730,27 +778,19 @@ Probability of Profit:
 ======================================================================</code></pre>
 </div>
 </div>
-<p><strong>Narrative and Comparison:</strong></p>
-<p>The comparison between the original strategy (100% at risk) and the modified strategy (25% at risk) reveals important trade-offs between risk and reward:</p>
-<p><strong>Which is Riskier?</strong></p>
-<p>The <strong>original strategy is significantly riskier</strong>. This is evident from several metrics:</p>
-<ol type="1">
-<li><p><strong>Volatility</strong>: The original strategy has much higher variance and coefficient of variation. The extreme swings (multiplying by 1.5 or 0.6) create massive dispersion in outcomes, with some simulations ending in pennies while others reach millions.</p></li>
-<li><p><strong>Probability of Loss</strong>: The original strategy typically has a lower probability of ending above the buy-in compared to the modified strategy. This means you’re more likely to lose money with the full-balance approach.</p></li>
-<li><p><strong>Downside Protection</strong>: The modified strategy protects 75% of your balance each round, creating a “floor” that prevents catastrophic losses. Even with a string of tails, you can’t lose more than 10% per round (0.90 multiplier), whereas the original can lose 40% per round (0.6 multiplier).</p></li>
-</ol>
-<p><strong>Which has Better Upside?</strong></p>
-<p>The <strong>original strategy has better upside potential</strong> in terms of maximum possible gains:</p>
-<ol type="1">
-<li><p><strong>Maximum Outcomes</strong>: When you get a favorable sequence of heads, betting the full balance compounds much faster. The 1.5× multiplier on the entire balance creates exponential growth that the modified strategy (1.125×) cannot match.</p></li>
-<li><p><strong>Upper Percentiles</strong>: The 75th percentile and maximum values are typically much higher for the original strategy, reflecting the potential for extreme wins.</p></li>
-<li><p><strong>Mean vs Median</strong>: The original strategy often has a higher mean (pulled up by extreme outliers), though the median may be lower, indicating that while most people lose, a few win big.</p></li>
-</ol>
-<p><strong>The Trade-off:</strong></p>
-<p>The modified strategy represents a <strong>risk-reward trade-off</strong>: - <strong>Lower risk</strong>: More consistent outcomes, higher probability of profit, protection against catastrophic losses - <strong>Lower upside</strong>: Cannot achieve the extreme gains possible with the original strategy - <strong>Better for most players</strong>: The higher probability of ending above buy-in makes it more attractive for risk-averse investors</p>
-<p>The original strategy is a <strong>high-risk, high-reward gamble</strong>: - <strong>Higher risk</strong>: Extreme volatility, lower probability of profit, potential for total loss - <strong>Higher upside</strong>: Potential for life-changing wins if you get lucky - <strong>Better for risk-tolerant players</strong>: Only suitable for those who can afford to lose everything</p>
-<p><strong>Practical Recommendation:</strong></p>
-<p>For most investors, the modified strategy (25% bet) is preferable because it offers a better balance: you’re more likely to end with a profit while still participating in the game’s upside. The original strategy is essentially a lottery ticket—most people lose, but a few win big. The modified strategy is more like a risky but potentially profitable investment.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Conclusion
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The comparison between the original strategy (100% at risk) and the modified strategy (25% at risk) reveals important trade-offs between risk and reward. The <strong>original strategy has better upside potential</strong> in terms of maximum possible gains but is also more risky. The modified strategy is less risky but has a lower upside potential. Let’s run one more simulation with 50% of the balance at risk and compare the results.</p>
+</div>
+</div>
 </section>
 <section id="modified-strategy-bet-50-of-balance-each-round" class="level3">
 <h3 class="anchored" data-anchor-id="modified-strategy-bet-50-of-balance-each-round">5.2) Modified Strategy (Bet 50% of Balance Each Round)</h3>
@@ -989,206 +1029,38 @@ Probability of Profit (P &gt; $30,000):
 ======================================================================</code></pre>
 </div>
 </div>
-<p><strong>Narrative and Comparison:</strong></p>
-<p>The comparison between the original strategy (100% at risk) and the modified strategy (50% at risk) reveals important trade-offs between risk and reward:</p>
-<p><strong>Which is Riskier?</strong></p>
-<p>The <strong>original strategy is significantly riskier</strong>. This is evident from several metrics:</p>
-<ol type="1">
-<li><p><strong>Volatility</strong>: The original strategy has much higher variance and coefficient of variation. The extreme swings (multiplying by 1.5 or 0.6) create massive dispersion in outcomes, with some simulations ending in pennies while others reach millions.</p></li>
-<li><p><strong>Probability of Loss</strong>: The original strategy typically has a lower probability of ending above $30,000 compared to the modified strategy. This means you’re more likely to lose money with the full-balance approach.</p></li>
-<li><p><strong>Downside Protection</strong>: The modified strategy protects 50% of your balance each round, creating a “floor” that prevents catastrophic losses. Even with a string of tails, you can’t lose more than 20% per round (0.80 multiplier), whereas the original can lose 40% per round (0.6 multiplier).</p></li>
-</ol>
-<p><strong>Which has Better Upside?</strong></p>
-<p>The <strong>original strategy has better upside potential</strong> in terms of maximum possible gains:</p>
-<ol type="1">
-<li><p><strong>Maximum Outcomes</strong>: When you get a favorable sequence of heads, betting the full balance compounds much faster. The 1.5× multiplier on the entire balance creates exponential growth that the modified strategy (1.25×) cannot match.</p></li>
-<li><p><strong>Upper Percentiles</strong>: The 75th percentile and maximum values are typically much higher for the original strategy, reflecting the potential for extreme wins.</p></li>
-<li><p><strong>Mean vs Median</strong>: The original strategy often has a higher mean (pulled up by extreme outliers), though the median may be lower, indicating that while most people lose, a few win big.</p></li>
-</ol>
-<p><strong>The Trade-off:</strong></p>
-<p>The modified strategy (50% bet) represents a <strong>moderate risk-reward trade-off</strong> compared to both the original (100%) and the more conservative 25% bet strategy:</p>
-<ul>
-<li><strong>Moderate risk reduction</strong>: More consistent outcomes than the original, higher probability of profit, better protection against catastrophic losses</li>
-<li><strong>Moderate upside reduction</strong>: Cannot achieve the extreme gains possible with the original strategy, but still allows for substantial growth</li>
-<li><strong>Middle ground</strong>: Balances risk and reward between the original (high risk/high reward) and the 25% strategy (low risk/low reward)</li>
-</ul>
-<p><strong>Practical Recommendation:</strong></p>
-<p>The 50% bet strategy offers a <strong>balanced approach</strong> that reduces risk while maintaining meaningful upside potential. It’s more suitable for investors who want to participate in the game’s growth potential but are unwilling to risk their entire balance on each flip. Compared to the 25% strategy, it offers higher potential returns at the cost of slightly higher risk.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Conclusion
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The comparison between the original strategy (100% at risk) and the modified strategy (25% at risk) reveals important trade-offs between risk and reward. The <strong>original strategy has better upside potential</strong> in terms of maximum possible gains but is also more risky. The modified strategy is less risky but has a lower upside potential, similar to the 25% strategy. However, we can see that the modified strategy (50% at risk) has a higher probability of profit than the original strategy. This is because the modified strategy is less risky and has a higher upside potential. but only slightly less riskier than 25% strategy.</p>
+</div>
+</div>
 </section>
 <section id="briefly-explain-your-findings-from-the-previous-step-in-light-of-a-concept-known-as-the-kelly-criterion" class="level3">
 <h3 class="anchored" data-anchor-id="briefly-explain-your-findings-from-the-previous-step-in-light-of-a-concept-known-as-the-kelly-criterion">6) Briefly Explain Your Findings From The Previous Step in Light of A Concept Known as the “Kelly Criterion”</h3>
-<p>What is the Kelly Criterion and how does it relate to the modified strategy?</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Conclusion
+</div>
+</div>
+<div class="callout-body-container callout-body">
 <p><strong>What is the Kelly Criterion?</strong></p>
-<p>The Kelly Criterion is a mathematical formula that determines the optimal fraction of your bankroll to bet in order to maximize long-term exponential growth. Developed by John L. Kelly Jr.&nbsp;in 1956, it’s widely used in gambling, investing, and portfolio management.</p>
-<p>The Kelly Criterion maximizes the expected logarithmic utility (or geometric mean return) over time. The key insight is that betting too little leaves money on the table, while betting too much increases the risk of ruin and reduces long-term growth due to the asymmetric impact of losses.</p>
-<p><strong>Kelly Formula for This Game:</strong></p>
-<p>In our investment game: - <strong>Win probability (p):</strong> 0.5 (heads) - <strong>Win multiplier:</strong> +50% (gain 50% of bet amount) - <strong>Loss multiplier:</strong> -40% (lose 40% of bet amount)</p>
-<p>If we bet a fraction <strong>f</strong> of our balance each round: - <strong>Heads:</strong> Balance becomes <code>1 + 0.5f</code> (we gain 50% of the bet fraction) - <strong>Tails:</strong> Balance becomes <code>1 - 0.4f</code> (we lose 40% of the bet fraction)</p>
-<p>The expected log return is: <span class="math display">\[\text{E}[\log(\text{return})] = 0.5 \times \log(1 + 0.5f) + 0.5 \times \log(1 - 0.4f)\]</span></p>
-<p>To find the optimal fraction, we take the derivative and set it to zero: <span class="math display">\[\frac{d}{df} \text{E}[\log(\text{return})] = \frac{0.5 \times 0.5}{1 + 0.5f} - \frac{0.5 \times 0.4}{1 - 0.4f} = 0\]</span></p>
-<p>Solving for <strong>f</strong>*: <span class="math display">\[\frac{0.25}{1 + 0.5f^*} = \frac{0.2}{1 - 0.4f^*}\]</span> <span class="math display">\[0.25(1 - 0.4f^*) = 0.2(1 + 0.5f^*)\]</span> <span class="math display">\[0.25 - 0.1f^* = 0.2 + 0.1f^*\]</span> <span class="math display">\[0.05 = 0.2f^*\]</span> <span class="math display">\[f^* = 0.25 = 25\%\]</span></p>
-<p><strong>The Kelly-optimal bet size is 25% of your balance each round.</strong></p>
-<div id="cell-q6-kelly-criterion-py" class="cell" data-execution_count="9">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.optimize <span class="im">import</span> minimize_scalar</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the expected log return function</span></span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> expected_log_return(f):</span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="co">    Calculate expected log return for betting fraction f</span></span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="co">    f: fraction of balance to bet (0 to 1)</span></span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> f <span class="op">&lt;=</span> <span class="dv">0</span> <span class="kw">or</span> f <span class="op">&gt;=</span> <span class="fl">2.5</span>:  <span class="co"># f must be &lt; 2.5 to avoid negative balance on loss</span></span>
-<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="op">-</span>np.inf</span>
-<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>    p <span class="op">=</span> <span class="fl">0.5</span>  <span class="co"># probability of heads</span></span>
-<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>    win_mult <span class="op">=</span> <span class="dv">1</span> <span class="op">+</span> <span class="fl">0.5</span> <span class="op">*</span> f  <span class="co"># balance after win</span></span>
-<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>    loss_mult <span class="op">=</span> <span class="dv">1</span> <span class="op">-</span> <span class="fl">0.4</span> <span class="op">*</span> f  <span class="co"># balance after loss</span></span>
-<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> loss_mult <span class="op">&lt;=</span> <span class="dv">0</span>:</span>
-<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="op">-</span>np.inf</span>
-<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> p <span class="op">*</span> np.log(win_mult) <span class="op">+</span> (<span class="dv">1</span> <span class="op">-</span> p) <span class="op">*</span> np.log(loss_mult)</span>
-<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate Kelly-optimal fraction numerically</span></span>
-<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> minimize_scalar(<span class="kw">lambda</span> f: <span class="op">-</span>expected_log_return(f), bounds<span class="op">=</span>(<span class="fl">0.001</span>, <span class="fl">2.4</span>), method<span class="op">=</span><span class="st">'bounded'</span>)</span>
-<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>kelly_fraction <span class="op">=</span> result.x</span>
-<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>kelly_return <span class="op">=</span> expected_log_return(kelly_fraction)</span>
-<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate for different bet fractions</span></span>
-<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>fractions <span class="op">=</span> np.linspace(<span class="fl">0.01</span>, <span class="fl">2.4</span>, <span class="dv">1000</span>)</span>
-<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>returns <span class="op">=</span> [expected_log_return(f) <span class="cf">for</span> f <span class="kw">in</span> fractions]</span>
-<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Find returns for specific strategies we tested</span></span>
-<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a>f_25 <span class="op">=</span> <span class="fl">0.25</span></span>
-<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a>f_50 <span class="op">=</span> <span class="fl">0.50</span></span>
-<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a>f_100 <span class="op">=</span> <span class="fl">1.00</span></span>
-<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a>return_25 <span class="op">=</span> expected_log_return(f_25)</span>
-<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a>return_50 <span class="op">=</span> expected_log_return(f_50)</span>
-<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a>return_100 <span class="op">=</span> expected_log_return(f_100)</span>
-<span id="cb13-36"><a href="#cb13-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-37"><a href="#cb13-37" aria-hidden="true" tabindex="-1"></a><span class="co"># Create plot</span></span>
-<span id="cb13-38"><a href="#cb13-38" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">7</span>))</span>
-<span id="cb13-39"><a href="#cb13-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-40"><a href="#cb13-40" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the curve</span></span>
-<span id="cb13-41"><a href="#cb13-41" aria-hidden="true" tabindex="-1"></a>ax.plot(fractions, returns, linewidth<span class="op">=</span><span class="fl">2.5</span>, color<span class="op">=</span><span class="st">'steelblue'</span>, label<span class="op">=</span><span class="st">'Expected Log Return'</span>)</span>
-<span id="cb13-42"><a href="#cb13-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-43"><a href="#cb13-43" aria-hidden="true" tabindex="-1"></a><span class="co"># Mark Kelly-optimal point</span></span>
-<span id="cb13-44"><a href="#cb13-44" aria-hidden="true" tabindex="-1"></a>ax.plot(kelly_fraction, kelly_return, <span class="st">'ro'</span>, markersize<span class="op">=</span><span class="dv">12</span>, label<span class="op">=</span><span class="ss">f'Kelly-Optimal (f* = </span><span class="sc">{</span>kelly_fraction<span class="sc">:.1%}</span><span class="ss">)'</span>, zorder<span class="op">=</span><span class="dv">5</span>)</span>
-<span id="cb13-45"><a href="#cb13-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-46"><a href="#cb13-46" aria-hidden="true" tabindex="-1"></a><span class="co"># Mark strategies we tested</span></span>
-<span id="cb13-47"><a href="#cb13-47" aria-hidden="true" tabindex="-1"></a>ax.plot(f_25, return_25, <span class="st">'go'</span>, markersize<span class="op">=</span><span class="dv">10</span>, label<span class="op">=</span><span class="ss">f'25% Strategy (f = </span><span class="sc">{</span>f_25<span class="sc">:.0%}</span><span class="ss">)'</span>, zorder<span class="op">=</span><span class="dv">4</span>)</span>
-<span id="cb13-48"><a href="#cb13-48" aria-hidden="true" tabindex="-1"></a>ax.plot(f_50, return_50, <span class="st">'mo'</span>, markersize<span class="op">=</span><span class="dv">10</span>, label<span class="op">=</span><span class="ss">f'50% Strategy (f = </span><span class="sc">{</span>f_50<span class="sc">:.0%}</span><span class="ss">)'</span>, zorder<span class="op">=</span><span class="dv">4</span>)</span>
-<span id="cb13-49"><a href="#cb13-49" aria-hidden="true" tabindex="-1"></a>ax.plot(f_100, return_100, <span class="st">'co'</span>, markersize<span class="op">=</span><span class="dv">10</span>, label<span class="op">=</span><span class="ss">f'100% Strategy (f = </span><span class="sc">{</span>f_100<span class="sc">:.0%}</span><span class="ss">)'</span>, zorder<span class="op">=</span><span class="dv">4</span>)</span>
-<span id="cb13-50"><a href="#cb13-50" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-51"><a href="#cb13-51" aria-hidden="true" tabindex="-1"></a><span class="co"># Add vertical lines</span></span>
-<span id="cb13-52"><a href="#cb13-52" aria-hidden="true" tabindex="-1"></a>ax.axvline(x<span class="op">=</span>kelly_fraction, color<span class="op">=</span><span class="st">'red'</span>, linestyle<span class="op">=</span><span class="st">'--'</span>, alpha<span class="op">=</span><span class="fl">0.5</span>, linewidth<span class="op">=</span><span class="fl">1.5</span>)</span>
-<span id="cb13-53"><a href="#cb13-53" aria-hidden="true" tabindex="-1"></a>ax.axvline(x<span class="op">=</span>f_25, color<span class="op">=</span><span class="st">'green'</span>, linestyle<span class="op">=</span><span class="st">'--'</span>, alpha<span class="op">=</span><span class="fl">0.5</span>, linewidth<span class="op">=</span><span class="dv">1</span>)</span>
-<span id="cb13-54"><a href="#cb13-54" aria-hidden="true" tabindex="-1"></a>ax.axvline(x<span class="op">=</span>f_50, color<span class="op">=</span><span class="st">'magenta'</span>, linestyle<span class="op">=</span><span class="st">'--'</span>, alpha<span class="op">=</span><span class="fl">0.5</span>, linewidth<span class="op">=</span><span class="dv">1</span>)</span>
-<span id="cb13-55"><a href="#cb13-55" aria-hidden="true" tabindex="-1"></a>ax.axvline(x<span class="op">=</span>f_100, color<span class="op">=</span><span class="st">'cyan'</span>, linestyle<span class="op">=</span><span class="st">'--'</span>, alpha<span class="op">=</span><span class="fl">0.5</span>, linewidth<span class="op">=</span><span class="dv">1</span>)</span>
-<span id="cb13-56"><a href="#cb13-56" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-57"><a href="#cb13-57" aria-hidden="true" tabindex="-1"></a><span class="co"># Styling</span></span>
-<span id="cb13-58"><a href="#cb13-58" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">'Bet Fraction (f)'</span>, fontsize<span class="op">=</span><span class="dv">12</span>)</span>
-<span id="cb13-59"><a href="#cb13-59" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">'Expected Log Return'</span>, fontsize<span class="op">=</span><span class="dv">12</span>)</span>
-<span id="cb13-60"><a href="#cb13-60" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">'Kelly Criterion: Expected Log Return vs Bet Fraction'</span>, fontsize<span class="op">=</span><span class="dv">14</span>, fontweight<span class="op">=</span><span class="st">'bold'</span>)</span>
-<span id="cb13-61"><a href="#cb13-61" aria-hidden="true" tabindex="-1"></a>ax.grid(<span class="va">True</span>, alpha<span class="op">=</span><span class="fl">0.3</span>, linestyle<span class="op">=</span><span class="st">'-'</span>, linewidth<span class="op">=</span><span class="fl">0.5</span>)</span>
-<span id="cb13-62"><a href="#cb13-62" aria-hidden="true" tabindex="-1"></a>ax.legend(loc<span class="op">=</span><span class="st">'best'</span>, fontsize<span class="op">=</span><span class="dv">10</span>)</span>
-<span id="cb13-63"><a href="#cb13-63" aria-hidden="true" tabindex="-1"></a>ax.set_xlim(<span class="dv">0</span>, <span class="fl">2.5</span>)</span>
-<span id="cb13-64"><a href="#cb13-64" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-65"><a href="#cb13-65" aria-hidden="true" tabindex="-1"></a><span class="co"># Add text annotations</span></span>
-<span id="cb13-66"><a href="#cb13-66" aria-hidden="true" tabindex="-1"></a>ax.text(kelly_fraction <span class="op">+</span> <span class="fl">0.05</span>, kelly_return, <span class="ss">f'Optimal</span><span class="ch">\n</span><span class="ss">(</span><span class="sc">{</span>kelly_fraction<span class="sc">:.1%}</span><span class="ss">)'</span>, </span>
-<span id="cb13-67"><a href="#cb13-67" aria-hidden="true" tabindex="-1"></a>        fontsize<span class="op">=</span><span class="dv">9</span>, verticalalignment<span class="op">=</span><span class="st">'bottom'</span>, bbox<span class="op">=</span><span class="bu">dict</span>(boxstyle<span class="op">=</span><span class="st">'round'</span>, facecolor<span class="op">=</span><span class="st">'yellow'</span>, alpha<span class="op">=</span><span class="fl">0.7</span>))</span>
-<span id="cb13-68"><a href="#cb13-68" aria-hidden="true" tabindex="-1"></a>ax.text(f_100 <span class="op">+</span> <span class="fl">0.05</span>, return_100, <span class="ss">f'Original</span><span class="ch">\n</span><span class="ss">(</span><span class="sc">{</span>f_100<span class="sc">:.0%}</span><span class="ss">)'</span>, </span>
-<span id="cb13-69"><a href="#cb13-69" aria-hidden="true" tabindex="-1"></a>        fontsize<span class="op">=</span><span class="dv">9</span>, verticalalignment<span class="op">=</span><span class="st">'bottom'</span>, bbox<span class="op">=</span><span class="bu">dict</span>(boxstyle<span class="op">=</span><span class="st">'round'</span>, facecolor<span class="op">=</span><span class="st">'lightblue'</span>, alpha<span class="op">=</span><span class="fl">0.7</span>))</span>
-<span id="cb13-70"><a href="#cb13-70" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-71"><a href="#cb13-71" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
-<span id="cb13-72"><a href="#cb13-72" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
-<span id="cb13-73"><a href="#cb13-73" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-74"><a href="#cb13-74" aria-hidden="true" tabindex="-1"></a><span class="co"># Print results</span></span>
-<span id="cb13-75"><a href="#cb13-75" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"="</span> <span class="op">*</span> <span class="dv">70</span>)</span>
-<span id="cb13-76"><a href="#cb13-76" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"KELLY CRITERION ANALYSIS"</span>)</span>
-<span id="cb13-77"><a href="#cb13-77" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"="</span> <span class="op">*</span> <span class="dv">70</span>)</span>
-<span id="cb13-78"><a href="#cb13-78" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Kelly-Optimal Bet Fraction: </span><span class="sc">{</span>kelly_fraction<span class="sc">:.4f}</span><span class="ss"> (</span><span class="sc">{</span>kelly_fraction<span class="sc">:.1%}</span><span class="ss">)"</span>)</span>
-<span id="cb13-79"><a href="#cb13-79" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Expected Log Return at Kelly Fraction: </span><span class="sc">{</span>kelly_return<span class="sc">:.6f}</span><span class="ss">"</span>)</span>
-<span id="cb13-80"><a href="#cb13-80" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Comparison of Strategies:"</span>)</span>
-<span id="cb13-81"><a href="#cb13-81" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"  25% Strategy:  Expected Log Return = </span><span class="sc">{</span>return_25<span class="sc">:.6f}</span><span class="ss">"</span>)</span>
-<span id="cb13-82"><a href="#cb13-82" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"  50% Strategy:  Expected Log Return = </span><span class="sc">{</span>return_50<span class="sc">:.6f}</span><span class="ss">"</span>)</span>
-<span id="cb13-83"><a href="#cb13-83" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"  100% Strategy: Expected Log Return = </span><span class="sc">{</span>return_100<span class="sc">:.6f}</span><span class="ss">"</span>)</span>
-<span id="cb13-84"><a href="#cb13-84" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Deviation from Optimal:"</span>)</span>
-<span id="cb13-85"><a href="#cb13-85" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"  25% Strategy:  </span><span class="sc">{</span><span class="bu">abs</span>(f_25 <span class="op">-</span> kelly_fraction)<span class="sc">:.1%}</span><span class="ss"> from optimal (Expected log return: </span><span class="sc">{</span>return_25<span class="sc">:.6f}</span><span class="ss">)"</span>)</span>
-<span id="cb13-86"><a href="#cb13-86" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"  50% Strategy:  </span><span class="sc">{</span><span class="bu">abs</span>(f_50 <span class="op">-</span> kelly_fraction)<span class="sc">:.1%}</span><span class="ss"> from optimal (Expected log return: </span><span class="sc">{</span>return_50<span class="sc">:.6f}</span><span class="ss">)"</span>)</span>
-<span id="cb13-87"><a href="#cb13-87" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"  100% Strategy: </span><span class="sc">{</span><span class="bu">abs</span>(f_100 <span class="op">-</span> kelly_fraction)<span class="sc">:.1%}</span><span class="ss"> from optimal (Expected log return: </span><span class="sc">{</span>return_100<span class="sc">:.6f}</span><span class="ss">)"</span>)</span>
-<span id="cb13-88"><a href="#cb13-88" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"="</span> <span class="op">*</span> <span class="dv">70</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display">
-<div id="q6-kelly-criterion-py" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="index_files/figure-html/q6-kelly-criterion-py-output-1.png" width="1143" height="661" class="figure-img"></p>
-<figcaption>Expected log return vs bet fraction, showing Kelly-optimal fraction</figcaption>
-</figure>
-</div>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>======================================================================
-KELLY CRITERION ANALYSIS
-======================================================================
-
-Kelly-Optimal Bet Fraction: 0.2500 (25.0%)
-Expected Log Return at Kelly Fraction: 0.006211
-
-Comparison of Strategies:
-  25% Strategy:  Expected Log Return = 0.006211
-  50% Strategy:  Expected Log Return = 0.000000
-  100% Strategy: Expected Log Return = -0.052680
-
-Deviation from Optimal:
-  25% Strategy:  0.0% from optimal (Expected log return: 0.006211)
-  50% Strategy:  25.0% from optimal (Expected log return: 0.000000)
-  100% Strategy: 75.0% from optimal (Expected log return: -0.052680)
-======================================================================</code></pre>
-</div>
-</div>
-<p><strong>How the Kelly Criterion Relates to Our Findings:</strong></p>
-<p>Our simulation results align perfectly with Kelly Criterion theory:</p>
-<ol type="1">
-<li><strong>The 25% Strategy is Kelly-Optimal:</strong>
-<ul>
-<li>The Kelly Criterion predicts that betting 25% of your balance each round maximizes long-term growth</li>
-<li>This matches the modified strategy we tested in section 5.1</li>
-<li>The 25% strategy should have the highest expected log return, which translates to better long-term performance</li>
-</ul></li>
-<li><strong>Why 100% (Original) is Suboptimal:</strong>
-<ul>
-<li>Betting your entire balance (100%) is <strong>over-betting</strong> according to Kelly</li>
-<li>While it offers the highest potential upside, it also has:
-<ul>
-<li>Higher volatility (risk)</li>
-<li>Lower probability of profit</li>
-<li>Higher risk of ruin</li>
-</ul></li>
-<li>The expected log return is lower because losses compound more severely when you bet too much</li>
-</ul></li>
-<li><strong>Why 50% is Better than 100% but Worse than 25%:</strong>
-<ul>
-<li>The 50% strategy is still <strong>over-betting</strong> compared to Kelly-optimal</li>
-<li>It reduces risk compared to 100%, but doesn’t maximize long-term growth</li>
-<li>It’s a compromise between risk and return, but not the theoretically optimal choice</li>
-</ul></li>
-<li><strong>The Kelly Criterion Explains the Trade-offs:</strong>
-<ul>
-<li><strong>Under-betting (&lt; 25%):</strong> Safe but leaves growth potential on the table</li>
-<li><strong>Kelly-optimal (25%):</strong> Maximizes long-term growth rate</li>
-<li><strong>Over-betting (&gt; 25%):</strong> Increases risk and volatility, reduces long-term growth despite higher potential upside</li>
-</ul></li>
-</ol>
-<p><strong>Practical Implications:</strong></p>
-<p>The Kelly Criterion provides a mathematical foundation for our empirical findings:</p>
-<ul>
-<li>The <strong>25% strategy</strong> (Kelly-optimal) should show the best balance of risk and return over many periods</li>
-<li>The <strong>100% strategy</strong> (over-betting) has extreme volatility and lower probability of profit, consistent with Kelly’s prediction that over-betting reduces long-term growth</li>
-<li>The <strong>50% strategy</strong> (also over-betting) is better than 100% but still suboptimal</li>
-</ul>
-<p><strong>Important Caveats:</strong></p>
-<p>While the Kelly Criterion is theoretically optimal for maximizing long-term growth, in practice: - It assumes you can play indefinitely (we only play 50 rounds) - It assumes you can bet fractional amounts (we can) - It doesn’t account for risk aversion or utility functions beyond log utility - Many practitioners use “fractional Kelly” (e.g., 50% of Kelly) to reduce volatility while maintaining most of the growth benefit</p>
+<p>The Kelly Criterion is a mathematical formula that determines the optimal fraction of your bankroll to bet in order to maximize long-term exponential growth. The Kelly Criterion maximizes the expected logarithmic utility (or geometric mean return) over time. The key insight is that betting too little leaves money on the table, while betting too much increases the risk of ruin and reduces long-term growth due to the asymmetric impact of losses.</p>
 <p><strong>Conclusion:</strong></p>
 <p>The Kelly Criterion mathematically validates our simulation findings: the 25% bet strategy is theoretically optimal for maximizing long-term growth, while the 100% strategy is over-aggressive and reduces expected long-term returns despite offering higher potential upside. The 50% strategy represents a middle ground that’s better than 100% but still suboptimal compared to the Kelly-optimal 25%.</p>
+</div>
+</div>
 </section>
 </section>
 <section id="professional-presentation-from-grading-tldr" class="level2">

@@ -18,7 +18,7 @@ execute:
 - [ ] Write your analysis in this `index.qmd`
 - [ ] Render to HTML (`quarto render` or Render button)
 - [ ] Push HTML to your repo and enable GitHub Pages
-- [ ] Share your site: `https://[your-username].github.io/simulationChallenge/`
+- [ ] Share your site: `https://raushon.github.io/simulationChallenge/`
 :::
 
 :::: {.callout-warning}
@@ -93,15 +93,10 @@ After one flip, the expected value of your account balance depends on the two ou
 **Expected Value (EV):**
 $$\text{EV} = 0.5 \times \$45,000 + 0.5 \times \$18,000 = \$22,500 + \$9,000 = \$31,500$$
 
-**Conclusion:** The expected value after one flip is **greater than** $30,000 (specifically $31,500).
+The expected value after one flip is **greater than** $30,000 (specifically $31,500).
 
 **Gain as percentage of buy-in:**
 $$\text{Gain} = \frac{\$31,500 - \$30,000}{\$30,000} \times 100\% = 5\%$$
-
-This simple analysis shows a **5% expected gain** per flip, which suggests the game is favorable in expectation. However, this single-flip analysis is incomplete because:
-- It ignores the substantial variance (risk of ending with $18,000 vs. $45,000)
-- The game is played multiple times, and the expected value calculation alone doesn't capture the compounding nature of wins and losses over time
-- We need to examine the distribution of outcomes over many periods to fully assess whether to buy-in
 
 ```{python}
 #| label: q1-expected-value-py
@@ -131,11 +126,15 @@ print(f"\nComparison: EV ${ev_one_flip:,.0f} {'>' if ev_one_flip > buy_in else '
 
 ```
 
+::::: {.callout-note}
+## Conclusion
+
+As explained and discussed in the classroom, this simple analysis is incomplete because it ignores the substantial variance (risk of ending with $18,000 vs. $45,000) and the compounding nature of wins and losses over time. We need to examine the distribution of outcomes over many periods to fully assess whether to buy-in. Else it looks too good strategy.
+::::
+
 ### 2) Single Simulation Over Time (Narrative + Plot)
 
 Below is a single simulated path showing how the account balance evolves over time. This simulation provides insight into the volatility and potential outcomes of the game.
-
-**Narrative:** Starting with $30,000, each year's coin flip dramatically affects the balance. Due to the compounding nature of the game (multiplicative rather than additive), the balance can experience exponential growth if heads come frequently, or rapid decline with multiple tails in succession. The **log scale** in the plot helps visualize both extreme outcomes—whether the balance grows to millions or shrinks to pennies. One simulation reveals the game's inherent volatility: it's not a steady path but a rollercoaster with high variability in outcomes.
 
 ```{python}
 #| label: q2-single-sim-py
@@ -205,8 +204,13 @@ print(f"Maximum balance: ${max(balance_history):,.2f}")
 print(f"Minimum balance: ${min(balance_history):,.2f}")
 
 ```
+::::: {.callout-note}
+## Conclusion
+The game is very volatile as shown in the plot. Due to compounding, the balance can grow to millions or shrink to pennies.
 
-**Are you happy with the outcome?** This single simulation shows just one possible path out of many. Whether the outcome is "good" depends entirely on the sequence of coin flips. Given the high volatility (seen in the dramatic swings in the plot), a single run cannot determine if you should buy-in. We need many simulations to understand the full distribution of outcomes and the probability of ending with more or less than your initial $30,000 investment. The fact that losing 40% hurts more financially than gaining 50% helps (due to the compounding asymmetry) suggests the game may be riskier than the simple expected value calculation suggests.
+**Are you happy with the outcome?** Definitely not. As explained my initial investment has reduced to 137.84 over 50 years. This is a very risky game. We need to further do an analysis to balance this risk.
+::::
+
 
 ### 3) 100 Simulations: Distribution of Final Balances
 
@@ -303,11 +307,11 @@ print(f"  75th percentile: ${np.percentile(final_balances, 75):,.2f}")
 
 ```
 
-**Narrative:** The distribution of final balances across 100 simulations reveals a striking pattern. The histogram is highly skewed—likely dominated by a few very large wins and many moderate-to-large losses. The **mean** tends to be pulled up by extreme outliers (massive wins), while the **median** provides a more realistic "typical" outcome, often falling below the initial buy-in.
+::::: {.callout-note}
+## Conclusion
+Even if the expected value appears favorable (from the single flip analysis), most players are likely to end up worse off. Only those who get a favorable sequence of heads early in the game stand a chance of meaningful gains. This is a **high-risk, high-variance gamble** rather than a reliable investment strategy.
+::::
 
-This asymmetry (mean > median) is a red flag: most players would lose money, but the rare big winners inflate the average. The **probability of ending above the buy-in** is crucial: if this probability is significantly below 50%, the game is risky despite a positive expected value. The log-scale histogram helps visualize outcomes ranging from pennies to millions, revealing the game's extreme volatility.
-
-**Practical interpretation:** Even if the expected value appears favorable (from the single flip analysis), most players are likely to end up worse off. Only those who get a favorable sequence of heads early in the game stand a chance of meaningful gains. This is a **high-risk, high-variance gamble** rather than a reliable investment strategy.
 
 ### 4) Probability Balance > $30,000 at Age 75 (Original Game)
 
@@ -342,15 +346,20 @@ prob_above_buyin = np.mean(final_balances_section4 > buy_in)
 print(f"Estimated probability of final balance > $30,000: {prob_above_buyin:.3f} ({prob_above_buyin:.1%})")
 
 if prob_above_buyin < 0.5:
-    print(f"\nInterpretation: There is a {prob_above_buyin:.1%} chance of ending with more than your buy-in.")
-    print("This is less than 50%, meaning you're more likely to lose money than to gain.")
+    print(f"\n There is a {prob_above_buyin:.1%} chance of ending with more than your buy-in.")
+    print("\n This is less than 50%, meaning you're more likely to lose money than to gain.")
 elif prob_above_buyin == 0.5:
-    print("\nInterpretation: Equal probability of gaining or losing from your buy-in.")
+    print("\n Equal probability of gaining or losing from your buy-in.")
 else:
-    print(f"\nInterpretation: There is a {prob_above_buyin:.1%} chance of ending with more than your buy-in.")
-    print("This is greater than 50%, meaning you're more likely to gain than to lose.")
+    print(f"\n There is a {prob_above_buyin:.1%} chance of ending with more than your buy-in.")
+    print("\n This is greater than 50%, meaning you're more likely to gain than to lose.")
 
 ```
+
+::::: {.callout-note}
+## Conclusion
+We have estimated the probability going 3 ways: gaining more, equal wins and loses and losing more. We can see we are more likely to lose money than to gain. Next lets modify the strategy to Bet 25% and 50% of the balance each round and compare the results.
+::::
 
 ### 5.1) Modified Strategy (Bet 25% of Balance Each Round)
 
@@ -543,45 +552,10 @@ print("=" * 70)
 
 ```
 
-**Narrative and Comparison:**
-
-The comparison between the original strategy (100% at risk) and the modified strategy (25% at risk) reveals important trade-offs between risk and reward:
-
-**Which is Riskier?**
-
-The **original strategy is significantly riskier**. This is evident from several metrics:
-
-1. **Volatility**: The original strategy has much higher variance and coefficient of variation. The extreme swings (multiplying by 1.5 or 0.6) create massive dispersion in outcomes, with some simulations ending in pennies while others reach millions.
-
-2. **Probability of Loss**: The original strategy typically has a lower probability of ending above the buy-in compared to the modified strategy. This means you're more likely to lose money with the full-balance approach.
-
-3. **Downside Protection**: The modified strategy protects 75% of your balance each round, creating a "floor" that prevents catastrophic losses. Even with a string of tails, you can't lose more than 10% per round (0.90 multiplier), whereas the original can lose 40% per round (0.6 multiplier).
-
-**Which has Better Upside?**
-
-The **original strategy has better upside potential** in terms of maximum possible gains:
-
-1. **Maximum Outcomes**: When you get a favorable sequence of heads, betting the full balance compounds much faster. The 1.5× multiplier on the entire balance creates exponential growth that the modified strategy (1.125×) cannot match.
-
-2. **Upper Percentiles**: The 75th percentile and maximum values are typically much higher for the original strategy, reflecting the potential for extreme wins.
-
-3. **Mean vs Median**: The original strategy often has a higher mean (pulled up by extreme outliers), though the median may be lower, indicating that while most people lose, a few win big.
-
-**The Trade-off:**
-
-The modified strategy represents a **risk-reward trade-off**:
-- **Lower risk**: More consistent outcomes, higher probability of profit, protection against catastrophic losses
-- **Lower upside**: Cannot achieve the extreme gains possible with the original strategy
-- **Better for most players**: The higher probability of ending above buy-in makes it more attractive for risk-averse investors
-
-The original strategy is a **high-risk, high-reward gamble**:
-- **Higher risk**: Extreme volatility, lower probability of profit, potential for total loss
-- **Higher upside**: Potential for life-changing wins if you get lucky
-- **Better for risk-tolerant players**: Only suitable for those who can afford to lose everything
-
-**Practical Recommendation:**
-
-For most investors, the modified strategy (25% bet) is preferable because it offers a better balance: you're more likely to end with a profit while still participating in the game's upside. The original strategy is essentially a lottery ticket—most people lose, but a few win big. The modified strategy is more like a risky but potentially profitable investment.
+::::: {.callout-note}
+## Conclusion
+The comparison between the original strategy (100% at risk) and the modified strategy (25% at risk) reveals important trade-offs between risk and reward. The **original strategy has better upside potential** in terms of maximum possible gains but is also more risky. The modified strategy is less risky but has a lower upside potential. Let's run one more simulation with 50% of the balance at risk and compare the results.
+::::
 
 ### 5.2) Modified Strategy (Bet 50% of Balance Each Round)
 
@@ -778,220 +752,27 @@ print("=" * 70)
 
 ```
 
-**Narrative and Comparison:**
+::::: {.callout-note}
+## Conclusion
+The comparison between the original strategy (100% at risk) and the modified strategy (25% at risk) reveals important trade-offs between risk and reward. The **original strategy has better upside potential** in terms of maximum possible gains but is also more risky. The modified strategy is less risky but has a lower upside potential, similar to the 25% strategy.
+However, we can see that the modified strategy (50% at risk) has a higher probability of profit than the original strategy. This is because the modified strategy is less risky and has a higher upside potential. but only slightly less riskier than 25% strategy.
+::::
 
-The comparison between the original strategy (100% at risk) and the modified strategy (50% at risk) reveals important trade-offs between risk and reward:
-
-**Which is Riskier?**
-
-The **original strategy is significantly riskier**. This is evident from several metrics:
-
-1. **Volatility**: The original strategy has much higher variance and coefficient of variation. The extreme swings (multiplying by 1.5 or 0.6) create massive dispersion in outcomes, with some simulations ending in pennies while others reach millions.
-
-2. **Probability of Loss**: The original strategy typically has a lower probability of ending above $30,000 compared to the modified strategy. This means you're more likely to lose money with the full-balance approach.
-
-3. **Downside Protection**: The modified strategy protects 50% of your balance each round, creating a "floor" that prevents catastrophic losses. Even with a string of tails, you can't lose more than 20% per round (0.80 multiplier), whereas the original can lose 40% per round (0.6 multiplier).
-
-**Which has Better Upside?**
-
-The **original strategy has better upside potential** in terms of maximum possible gains:
-
-1. **Maximum Outcomes**: When you get a favorable sequence of heads, betting the full balance compounds much faster. The 1.5× multiplier on the entire balance creates exponential growth that the modified strategy (1.25×) cannot match.
-
-2. **Upper Percentiles**: The 75th percentile and maximum values are typically much higher for the original strategy, reflecting the potential for extreme wins.
-
-3. **Mean vs Median**: The original strategy often has a higher mean (pulled up by extreme outliers), though the median may be lower, indicating that while most people lose, a few win big.
-
-**The Trade-off:**
-
-The modified strategy (50% bet) represents a **moderate risk-reward trade-off** compared to both the original (100%) and the more conservative 25% bet strategy:
-
-- **Moderate risk reduction**: More consistent outcomes than the original, higher probability of profit, better protection against catastrophic losses
-- **Moderate upside reduction**: Cannot achieve the extreme gains possible with the original strategy, but still allows for substantial growth
-- **Middle ground**: Balances risk and reward between the original (high risk/high reward) and the 25% strategy (low risk/low reward)
-
-**Practical Recommendation:**
-
-The 50% bet strategy offers a **balanced approach** that reduces risk while maintaining meaningful upside potential. It's more suitable for investors who want to participate in the game's growth potential but are unwilling to risk their entire balance on each flip. Compared to the 25% strategy, it offers higher potential returns at the cost of slightly higher risk.
 
 ### 6) Briefly Explain Your Findings From The Previous Step in Light of A Concept Known as the "Kelly Criterion"
 
-What is the Kelly Criterion and how does it relate to the modified strategy?
-
+::::: {.callout-note}
+## Conclusion
 **What is the Kelly Criterion?**
 
-The Kelly Criterion is a mathematical formula that determines the optimal fraction of your bankroll to bet in order to maximize long-term exponential growth. Developed by John L. Kelly Jr. in 1956, it's widely used in gambling, investing, and portfolio management.
+The Kelly Criterion is a mathematical formula that determines the optimal fraction of your bankroll to bet in order to maximize long-term exponential growth. The Kelly Criterion maximizes the expected logarithmic utility (or geometric mean return) over time. The key insight is that betting too little leaves money on the table, while betting too much increases the risk of ruin and reduces long-term growth due to the asymmetric impact of losses.
 
-The Kelly Criterion maximizes the expected logarithmic utility (or geometric mean return) over time. The key insight is that betting too little leaves money on the table, while betting too much increases the risk of ruin and reduces long-term growth due to the asymmetric impact of losses.
-
-**Kelly Formula for This Game:**
-
-In our investment game:
-- **Win probability (p):** 0.5 (heads)
-- **Win multiplier:** +50% (gain 50% of bet amount)
-- **Loss multiplier:** -40% (lose 40% of bet amount)
-
-If we bet a fraction **f** of our balance each round:
-- **Heads:** Balance becomes `1 + 0.5f` (we gain 50% of the bet fraction)
-- **Tails:** Balance becomes `1 - 0.4f` (we lose 40% of the bet fraction)
-
-The expected log return is:
-$$\text{E}[\log(\text{return})] = 0.5 \times \log(1 + 0.5f) + 0.5 \times \log(1 - 0.4f)$$
-
-To find the optimal fraction, we take the derivative and set it to zero:
-$$\frac{d}{df} \text{E}[\log(\text{return})] = \frac{0.5 \times 0.5}{1 + 0.5f} - \frac{0.5 \times 0.4}{1 - 0.4f} = 0$$
-
-Solving for **f***:
-$$\frac{0.25}{1 + 0.5f^*} = \frac{0.2}{1 - 0.4f^*}$$
-$$0.25(1 - 0.4f^*) = 0.2(1 + 0.5f^*)$$
-$$0.25 - 0.1f^* = 0.2 + 0.1f^*$$
-$$0.05 = 0.2f^*$$
-$$f^* = 0.25 = 25\%$$
-
-**The Kelly-optimal bet size is 25% of your balance each round.**
-
-```{python}
-#| label: q6-kelly-criterion-py
-#| echo: true
-#| fig-cap: "Expected log return vs bet fraction, showing Kelly-optimal fraction"
-
-import numpy as np
-import matplotlib.pyplot as plt
-from scipy.optimize import minimize_scalar
-
-# Define the expected log return function
-def expected_log_return(f):
-    """
-    Calculate expected log return for betting fraction f
-    f: fraction of balance to bet (0 to 1)
-    """
-    if f <= 0 or f >= 2.5:  # f must be < 2.5 to avoid negative balance on loss
-        return -np.inf
-    p = 0.5  # probability of heads
-    win_mult = 1 + 0.5 * f  # balance after win
-    loss_mult = 1 - 0.4 * f  # balance after loss
-    if loss_mult <= 0:
-        return -np.inf
-    return p * np.log(win_mult) + (1 - p) * np.log(loss_mult)
-
-# Calculate Kelly-optimal fraction numerically
-result = minimize_scalar(lambda f: -expected_log_return(f), bounds=(0.001, 2.4), method='bounded')
-kelly_fraction = result.x
-kelly_return = expected_log_return(kelly_fraction)
-
-# Calculate for different bet fractions
-fractions = np.linspace(0.01, 2.4, 1000)
-returns = [expected_log_return(f) for f in fractions]
-
-# Find returns for specific strategies we tested
-f_25 = 0.25
-f_50 = 0.50
-f_100 = 1.00
-return_25 = expected_log_return(f_25)
-return_50 = expected_log_return(f_50)
-return_100 = expected_log_return(f_100)
-
-# Create plot
-fig, ax = plt.subplots(figsize=(12, 7))
-
-# Plot the curve
-ax.plot(fractions, returns, linewidth=2.5, color='steelblue', label='Expected Log Return')
-
-# Mark Kelly-optimal point
-ax.plot(kelly_fraction, kelly_return, 'ro', markersize=12, label=f'Kelly-Optimal (f* = {kelly_fraction:.1%})', zorder=5)
-
-# Mark strategies we tested
-ax.plot(f_25, return_25, 'go', markersize=10, label=f'25% Strategy (f = {f_25:.0%})', zorder=4)
-ax.plot(f_50, return_50, 'mo', markersize=10, label=f'50% Strategy (f = {f_50:.0%})', zorder=4)
-ax.plot(f_100, return_100, 'co', markersize=10, label=f'100% Strategy (f = {f_100:.0%})', zorder=4)
-
-# Add vertical lines
-ax.axvline(x=kelly_fraction, color='red', linestyle='--', alpha=0.5, linewidth=1.5)
-ax.axvline(x=f_25, color='green', linestyle='--', alpha=0.5, linewidth=1)
-ax.axvline(x=f_50, color='magenta', linestyle='--', alpha=0.5, linewidth=1)
-ax.axvline(x=f_100, color='cyan', linestyle='--', alpha=0.5, linewidth=1)
-
-# Styling
-ax.set_xlabel('Bet Fraction (f)', fontsize=12)
-ax.set_ylabel('Expected Log Return', fontsize=12)
-ax.set_title('Kelly Criterion: Expected Log Return vs Bet Fraction', fontsize=14, fontweight='bold')
-ax.grid(True, alpha=0.3, linestyle='-', linewidth=0.5)
-ax.legend(loc='best', fontsize=10)
-ax.set_xlim(0, 2.5)
-
-# Add text annotations
-ax.text(kelly_fraction + 0.05, kelly_return, f'Optimal\n({kelly_fraction:.1%})', 
-        fontsize=9, verticalalignment='bottom', bbox=dict(boxstyle='round', facecolor='yellow', alpha=0.7))
-ax.text(f_100 + 0.05, return_100, f'Original\n({f_100:.0%})', 
-        fontsize=9, verticalalignment='bottom', bbox=dict(boxstyle='round', facecolor='lightblue', alpha=0.7))
-
-plt.tight_layout()
-plt.show()
-
-# Print results
-print("=" * 70)
-print("KELLY CRITERION ANALYSIS")
-print("=" * 70)
-print(f"\nKelly-Optimal Bet Fraction: {kelly_fraction:.4f} ({kelly_fraction:.1%})")
-print(f"Expected Log Return at Kelly Fraction: {kelly_return:.6f}")
-print(f"\nComparison of Strategies:")
-print(f"  25% Strategy:  Expected Log Return = {return_25:.6f}")
-print(f"  50% Strategy:  Expected Log Return = {return_50:.6f}")
-print(f"  100% Strategy: Expected Log Return = {return_100:.6f}")
-print(f"\nDeviation from Optimal:")
-print(f"  25% Strategy:  {abs(f_25 - kelly_fraction):.1%} from optimal (Expected log return: {return_25:.6f})")
-print(f"  50% Strategy:  {abs(f_50 - kelly_fraction):.1%} from optimal (Expected log return: {return_50:.6f})")
-print(f"  100% Strategy: {abs(f_100 - kelly_fraction):.1%} from optimal (Expected log return: {return_100:.6f})")
-print("=" * 70)
-
-```
-
-**How the Kelly Criterion Relates to Our Findings:**
-
-Our simulation results align perfectly with Kelly Criterion theory:
-
-1. **The 25% Strategy is Kelly-Optimal:**
-   - The Kelly Criterion predicts that betting 25% of your balance each round maximizes long-term growth
-   - This matches the modified strategy we tested in section 5.1
-   - The 25% strategy should have the highest expected log return, which translates to better long-term performance
-
-2. **Why 100% (Original) is Suboptimal:**
-   - Betting your entire balance (100%) is **over-betting** according to Kelly
-   - While it offers the highest potential upside, it also has:
-     - Higher volatility (risk)
-     - Lower probability of profit
-     - Higher risk of ruin
-   - The expected log return is lower because losses compound more severely when you bet too much
-
-3. **Why 50% is Better than 100% but Worse than 25%:**
-   - The 50% strategy is still **over-betting** compared to Kelly-optimal
-   - It reduces risk compared to 100%, but doesn't maximize long-term growth
-   - It's a compromise between risk and return, but not the theoretically optimal choice
-
-4. **The Kelly Criterion Explains the Trade-offs:**
-   - **Under-betting (< 25%):** Safe but leaves growth potential on the table
-   - **Kelly-optimal (25%):** Maximizes long-term growth rate
-   - **Over-betting (> 25%):** Increases risk and volatility, reduces long-term growth despite higher potential upside
-
-**Practical Implications:**
-
-The Kelly Criterion provides a mathematical foundation for our empirical findings:
-
-- The **25% strategy** (Kelly-optimal) should show the best balance of risk and return over many periods
-- The **100% strategy** (over-betting) has extreme volatility and lower probability of profit, consistent with Kelly's prediction that over-betting reduces long-term growth
-- The **50% strategy** (also over-betting) is better than 100% but still suboptimal
-
-**Important Caveats:**
-
-While the Kelly Criterion is theoretically optimal for maximizing long-term growth, in practice:
-- It assumes you can play indefinitely (we only play 50 rounds)
-- It assumes you can bet fractional amounts (we can)
-- It doesn't account for risk aversion or utility functions beyond log utility
-- Many practitioners use "fractional Kelly" (e.g., 50% of Kelly) to reduce volatility while maintaining most of the growth benefit
 
 **Conclusion:**
 
 The Kelly Criterion mathematically validates our simulation findings: the 25% bet strategy is theoretically optimal for maximizing long-term growth, while the 100% strategy is over-aggressive and reduces expected long-term returns despite offering higher potential upside. The 50% strategy represents a middle ground that's better than 100% but still suboptimal compared to the Kelly-optimal 25%.
+::::
+
 
 
 ## Professional Presentation (From Grading TLDR)
