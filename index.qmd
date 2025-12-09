@@ -85,79 +85,913 @@ investmentDAG.show()
 
 ### 1) Expected Value After 1 Flip
 
-TODO: Explain whether the expected value of your account balance after one flip is >, =, or < $30,000. What is the gain in expected value as a percentage of your buy-in? Does this simple analysis suggest you should buy-in to the game?
+After one flip, the expected value of your account balance depends on the two outcomes:
+
+- **Heads (50% probability):** Balance = $30,000 × 1.5 = $45,000
+- **Tails (50% probability):** Balance = $30,000 × 0.6 = $18,000
+
+**Expected Value (EV):**
+$$\text{EV} = 0.5 \times \$45,000 + 0.5 \times \$18,000 = \$22,500 + \$9,000 = \$31,500$$
+
+**Conclusion:** The expected value after one flip is **greater than** $30,000 (specifically $31,500).
+
+**Gain as percentage of buy-in:**
+$$\text{Gain} = \frac{\$31,500 - \$30,000}{\$30,000} \times 100\% = 5\%$$
+
+This simple analysis shows a **5% expected gain** per flip, which suggests the game is favorable in expectation. However, this single-flip analysis is incomplete because:
+- It ignores the substantial variance (risk of ending with $18,000 vs. $45,000)
+- The game is played multiple times, and the expected value calculation alone doesn't capture the compounding nature of wins and losses over time
+- We need to examine the distribution of outcomes over many periods to fully assess whether to buy-in
 
 ```{python}
 #| label: q1-expected-value-py
 #| echo: true
 
-# TODO: Compute EV after one flip in Python
-# - Show calculation and brief explanation
+# Compute expected value after one flip
+buy_in = 30000
+prob_heads = 0.5
+prob_tails = 0.5
+
+# Outcomes
+value_heads = buy_in * 1.5  # +50%
+value_tails = buy_in * 0.6  # -40%
+
+# Expected value
+ev_one_flip = prob_heads * value_heads + prob_tails * value_tails
+
+# Gain as percentage
+gain_percent = ((ev_one_flip - buy_in) / buy_in) * 100
+
+print(f"Initial investment: ${buy_in:,}")
+print(f"Value if heads (50% chance): ${value_heads:,}")
+print(f"Value if tails (50% chance): ${value_tails:,}")
+print(f"\nExpected value after 1 flip: ${ev_one_flip:,}")
+print(f"Gain: {gain_percent:.1f}% of buy-in")
+print(f"\nComparison: EV ${ev_one_flip:,.0f} {'>' if ev_one_flip > buy_in else '=' if ev_one_flip == buy_in else '<'} Initial ${buy_in:,}")
 
 ```
 
 ### 2) Single Simulation Over Time (Narrative + Plot)
 
-Briefly narrate and visualize what happens to your account balance over the course of one run. Are you happy with the outcome? Why? or Why not?  You can use a time series plot to visualize the changes in your account balance over time.
+Below is a single simulated path showing how the account balance evolves over time. This simulation provides insight into the volatility and potential outcomes of the game.
+
+**Narrative:** Starting with $30,000, each year's coin flip dramatically affects the balance. Due to the compounding nature of the game (multiplicative rather than additive), the balance can experience exponential growth if heads come frequently, or rapid decline with multiple tails in succession. The **log scale** in the plot helps visualize both extreme outcomes—whether the balance grows to millions or shrinks to pennies. One simulation reveals the game's inherent volatility: it's not a steady path but a rollercoaster with high variability in outcomes.
 
 ```{python}
 #| label: q2-single-sim-py
 #| echo: true
 #| fig-cap: "Single simulation path of account balance"
+import numpy as np
+import matplotlib.pyplot as plt
 
-# TODO: Simulate one path from $30,000 over N periods
-# - Make a matplotlib (OO) time-series
-# - Set seed for reproducibility
+# Set seed for reproducibility
+np.random.seed(42)
+
+# Simulation parameters
+buy_in = 30000
+n_periods = 50  # Assuming starting age 25, playing until age 75
+initial_balance = buy_in
+
+# Initialize tracking
+balance_history = [initial_balance]
+current_balance = initial_balance
+
+# Simulate coin flips over time
+for period in range(n_periods):
+    # Fair coin flip (0.5 probability)
+    coin_flip = np.random.binomial(1, 0.5)
+    
+    # Update balance based on outcome
+    if coin_flip == 1:  # Heads
+        current_balance = current_balance * 1.5  # +50%
+    else:  # Tails
+        current_balance = current_balance * 0.6  # -40%
+    
+    balance_history.append(current_balance)
+
+# Create the time series plot using matplotlib OO style
+fig, ax = plt.subplots(figsize=(10, 6))
+
+# Create time axis
+time_periods = np.arange(len(balance_history))
+
+# Plot the balance over time
+ax.plot(time_periods, balance_history, linewidth=2, color='steelblue', label='Account Balance')
+
+# Add horizontal line at buy-in for reference
+ax.axhline(y=buy_in, color='red', linestyle='--', linewidth=2, label='Initial Buy-in ($30,000)')
+
+# Styling
+ax.set_xlabel('Time Period (Years)', fontsize=12)
+ax.set_ylabel('Account Balance ($)', fontsize=12)
+ax.set_title('Account Balance Over Time: Single Simulation Run', fontsize=14, fontweight='bold')
+ax.grid(True, alpha=0.3, linestyle='-', linewidth=0.5)
+ax.legend(loc='best', fontsize=10)
+
+# Use log scale for y-axis to better visualize exponential growth/decay
+ax.set_yscale('log')
+ax.set_ylim(bottom=100, top=max(balance_history) * 10)
+
+plt.tight_layout()
+plt.show()
+
+# Print summary statistics
+final_balance = balance_history[-1]
+print(f"\nSimulation Summary:")
+print(f"Initial balance: ${initial_balance:,}")
+print(f"Final balance: ${final_balance:,.2f}")
+print(f"Net change: ${final_balance - initial_balance:,.2f} ({((final_balance / initial_balance - 1) * 100):.1f}%)")
+print(f"Maximum balance: ${max(balance_history):,.2f}")
+print(f"Minimum balance: ${min(balance_history):,.2f}")
 
 ```
 
+**Are you happy with the outcome?** This single simulation shows just one possible path out of many. Whether the outcome is "good" depends entirely on the sequence of coin flips. Given the high volatility (seen in the dramatic swings in the plot), a single run cannot determine if you should buy-in. We need many simulations to understand the full distribution of outcomes and the probability of ending with more or less than your initial $30,000 investment. The fact that losing 40% hurts more financially than gaining 50% helps (due to the compounding asymmetry) suggests the game may be riskier than the simple expected value calculation suggests.
+
 ### 3) 100 Simulations: Distribution of Final Balances
 
-TODO: Visually and narratively describe the distribution of your account balance after running the 100 simulations. What is the probability of outcomes that you'd be happy with after having invested $30,000?
+Running 100 simulations provides a comprehensive view of the range of possible outcomes, revealing the true risk and reward profile of the game.
 
 ```{python}
 #| label: q3-dist-100-py
 #| echo: true
 #| fig-cap: "Distribution of final balances across 100 simulations"
+import numpy as np
+import matplotlib.pyplot as plt
 
-# TODO: Run 100 simulations and plot histogram of final balances
-# - Add vertical line at $30,000
-# - Compute mean, median, and P(final > $30,000)
+# Set seed for reproducibility
+np.random.seed(123)
+
+# Simulation parameters
+buy_in = 30000
+n_periods = 50
+n_simulations = 100
+
+# Storage for final balances
+final_balances = []
+
+# Run 100 simulations
+for sim in range(n_simulations):
+    current_balance = buy_in
+    
+    for period in range(n_periods):
+        # Fair coin flip
+        coin_flip = np.random.binomial(1, 0.5)
+        
+        # Update balance
+        if coin_flip == 1:  # Heads
+            current_balance = current_balance * 1.5  # +50%
+        else:  # Tails
+            current_balance = current_balance * 0.6  # -40%
+    
+    final_balances.append(current_balance)
+
+final_balances = np.array(final_balances)
+
+# Calculate statistics
+mean_balance = np.mean(final_balances)
+median_balance = np.median(final_balances)
+prob_above_buyin = np.mean(final_balances > buy_in)
+
+# Create histogram with matplotlib OO style
+fig, ax = plt.subplots(figsize=(10, 6))
+
+# Create bins for histogram (log scale for better visualization)
+bins = np.logspace(np.log10(min(final_balances)), np.log10(max(final_balances)), 50)
+
+# Plot histogram
+n, bins, patches = ax.hist(final_balances, bins=bins, edgecolor='black', alpha=0.7, color='steelblue')
+
+# Color bars based on whether they're above or below buy-in
+for i, patch in enumerate(patches):
+    if bins[i] < buy_in:
+        patch.set_facecolor('coral')  # Red for losses
+    else:
+        patch.set_facecolor('lightgreen')  # Green for gains
+
+# Add vertical line at buy-in
+ax.axvline(x=buy_in, color='red', linestyle='--', linewidth=2.5, label='Initial Buy-in ($30,000)')
+
+# Add mean and median lines
+ax.axvline(x=mean_balance, color='blue', linestyle='--', linewidth=2, alpha=0.8, label=f'Mean: ${mean_balance:,.0f}')
+ax.axvline(x=median_balance, color='orange', linestyle='--', linewidth=2, alpha=0.8, label=f'Median: ${median_balance:,.0f}')
+
+# Styling
+ax.set_xlabel('Final Account Balance ($)', fontsize=12)
+ax.set_ylabel('Frequency', fontsize=12)
+ax.set_title('Distribution of Final Balances (100 Simulations)', fontsize=14, fontweight='bold')
+ax.set_xscale('log')
+ax.legend(loc='upper right', fontsize=10)
+ax.grid(True, alpha=0.3, linestyle='-', linewidth=0.5, axis='y')
+
+# Add text box with key statistics
+stats_text = f'Mean: ${mean_balance:,.0f}\nMedian: ${median_balance:,.0f}\nP(Balance > ${buy_in:,}): {prob_above_buyin:.1%}'
+ax.text(0.02, 0.98, stats_text, transform=ax.transAxes, fontsize=11,
+        verticalalignment='top', bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.8))
+
+plt.tight_layout()
+plt.show()
+
+print(f"\nSimulation Statistics (100 runs):")
+print(f"  Mean final balance: ${mean_balance:,.2f}")
+print(f"  Median final balance: ${median_balance:,.2f}")
+print(f"  Probability of ending above buy-in: {prob_above_buyin:.1%}")
+print(f"  Min final balance: ${np.min(final_balances):,.2f}")
+print(f"  Max final balance: ${np.max(final_balances):,.2f}")
+print(f"  25th percentile: ${np.percentile(final_balances, 25):,.2f}")
+print(f"  75th percentile: ${np.percentile(final_balances, 75):,.2f}")
 
 ```
 
+**Narrative:** The distribution of final balances across 100 simulations reveals a striking pattern. The histogram is highly skewed—likely dominated by a few very large wins and many moderate-to-large losses. The **mean** tends to be pulled up by extreme outliers (massive wins), while the **median** provides a more realistic "typical" outcome, often falling below the initial buy-in.
+
+This asymmetry (mean > median) is a red flag: most players would lose money, but the rare big winners inflate the average. The **probability of ending above the buy-in** is crucial: if this probability is significantly below 50%, the game is risky despite a positive expected value. The log-scale histogram helps visualize outcomes ranging from pennies to millions, revealing the game's extreme volatility.
+
+**Practical interpretation:** Even if the expected value appears favorable (from the single flip analysis), most players are likely to end up worse off. Only those who get a favorable sequence of heads early in the game stand a chance of meaningful gains. This is a **high-risk, high-variance gamble** rather than a reliable investment strategy.
+
 ### 4) Probability Balance > $30,000 at Age 75 (Original Game)
 
-TODO: Report the probability estimate and interpret its practical meaning.
+Report the probability estimate and interpret its practical meaning.
 
 ```{python}
 #| label: q4-prob-original-py
 #| echo: true
 
-# TODO: Using the 100 simulations above, estimate P(final > 30000)
-# - Print numeric result with 3 decimals
+# Re-run simulations to ensure we have the data
+import numpy as np
+
+np.random.seed(123)  # Same seed for reproducibility
+buy_in = 30000
+n_periods = 50
+n_simulations = 100
+
+final_balances_section4 = []
+for sim in range(n_simulations):
+    current_balance = buy_in
+    for period in range(n_periods):
+        coin_flip = np.random.binomial(1, 0.5)
+        if coin_flip == 1:
+            current_balance = current_balance * 1.5
+        else:
+            current_balance = current_balance * 0.6
+    final_balances_section4.append(current_balance)
+
+final_balances_section4 = np.array(final_balances_section4)
+prob_above_buyin = np.mean(final_balances_section4 > buy_in)
+
+print(f"Estimated probability of final balance > $30,000: {prob_above_buyin:.3f} ({prob_above_buyin:.1%})")
+
+if prob_above_buyin < 0.5:
+    print(f"\nInterpretation: There is a {prob_above_buyin:.1%} chance of ending with more than your buy-in.")
+    print("This is less than 50%, meaning you're more likely to lose money than to gain.")
+elif prob_above_buyin == 0.5:
+    print("\nInterpretation: Equal probability of gaining or losing from your buy-in.")
+else:
+    print(f"\nInterpretation: There is a {prob_above_buyin:.1%} chance of ending with more than your buy-in.")
+    print("This is greater than 50%, meaning you're more likely to gain than to lose.")
 
 ```
 
-### 5) Modified Strategy (Bet Exactly 50% Each Round)
+### 5.1) Modified Strategy (Bet 25% of Balance Each Round)
 
 Instead of having the full balance at risk with each coin flip, assume only 25% of your balance is gambled each year. Compare this to the original game. Which is riskier? Which has better upside?
 
-```{python}
-#| label: q5-modified-50pct-py
-#| echo: true
-#| fig-cap: "Modified strategy distribution (bet 50% each round)"
+**Modified Strategy Mechanics:**
+- Only 25% of the current balance is gambled each year
+- 75% of the balance remains safe (not at risk)
+- If heads: the 25% portion gains 50%, so total balance = 75% + (25% × 1.5) = 112.5% of previous balance
+- If tails: the 25% portion loses 40%, so total balance = 75% + (25% × 0.6) = 90% of previous balance
 
-# TODO: Implement the modified game
-# - Run 100 simulations; plot distribution of final balances
-# - Estimate P(final > 30000) and compare to original
-# - visually compare the outcome distributions of the original and modified strategies
+This means each flip multiplies the balance by either 1.125 (heads) or 0.90 (tails), compared to the original 1.5 or 0.6.
+
+```{python}
+#| label: q5-modified-25pct-py
+#| echo: true
+#| fig-cap: "Comparison of original vs modified (25% bet) strategy distributions"
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Set seed for reproducibility
+np.random.seed(123)
+
+# Simulation parameters
+buy_in = 30000
+n_periods = 50
+n_simulations = 100
+
+# Storage for final balances
+final_balances_original = []
+final_balances_modified = []
+
+# Run 100 simulations for both strategies
+for sim in range(n_simulations):
+    # Original strategy: full balance at risk
+    balance_original = buy_in
+    balance_modified = buy_in
+    
+    for period in range(n_periods):
+        # Same coin flip for both strategies (fair comparison)
+        coin_flip = np.random.binomial(1, 0.5)
+        
+        # Original strategy: full balance at risk
+        if coin_flip == 1:  # Heads
+            balance_original = balance_original * 1.5  # +50%
+        else:  # Tails
+            balance_original = balance_original * 0.6  # -40%
+        
+        # Modified strategy: only 25% at risk
+        # 75% safe + 25% gambled
+        if coin_flip == 1:  # Heads
+            # 75% safe + 25% * 1.5 = 75% + 37.5% = 112.5% of previous balance
+            balance_modified = balance_modified * 1.125
+        else:  # Tails
+            # 75% safe + 25% * 0.6 = 75% + 15% = 90% of previous balance
+            balance_modified = balance_modified * 0.90
+    
+    final_balances_original.append(balance_original)
+    final_balances_modified.append(balance_modified)
+
+final_balances_original = np.array(final_balances_original)
+final_balances_modified = np.array(final_balances_modified)
+
+# Calculate statistics for both strategies
+mean_original = np.mean(final_balances_original)
+median_original = np.median(final_balances_original)
+prob_above_buyin_original = np.mean(final_balances_original > buy_in)
+
+mean_modified = np.mean(final_balances_modified)
+median_modified = np.median(final_balances_modified)
+prob_above_buyin_modified = np.mean(final_balances_modified > buy_in)
+
+# Create comparison plot
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 6))
+
+# Determine shared bins for comparison
+all_balances = np.concatenate([final_balances_original, final_balances_modified])
+bins = np.logspace(np.log10(min(all_balances)), np.log10(max(all_balances)), 50)
+
+# Plot original strategy
+n1, bins1, patches1 = ax1.hist(final_balances_original, bins=bins, edgecolor='black', alpha=0.7, color='steelblue')
+for i, patch in enumerate(patches1):
+    if bins1[i] < buy_in:
+        patch.set_facecolor('coral')
+    else:
+        patch.set_facecolor('lightgreen')
+
+ax1.axvline(x=buy_in, color='red', linestyle='--', linewidth=2.5, label='Buy-in ($30,000)')
+ax1.axvline(x=mean_original, color='blue', linestyle='--', linewidth=2, alpha=0.8, label=f'Mean: ${mean_original:,.0f}')
+ax1.axvline(x=median_original, color='orange', linestyle='--', linewidth=2, alpha=0.8, label=f'Median: ${median_original:,.0f}')
+ax1.set_xlabel('Final Account Balance ($)', fontsize=12)
+ax1.set_ylabel('Frequency', fontsize=12)
+ax1.set_title('Original Strategy (100% at Risk)', fontsize=14, fontweight='bold')
+ax1.set_xscale('log')
+ax1.legend(loc='upper right', fontsize=9)
+ax1.grid(True, alpha=0.3, linestyle='-', linewidth=0.5, axis='y')
+
+stats_text_original = f'Mean: ${mean_original:,.0f}\nMedian: ${median_original:,.0f}\nP(> $30k): {prob_above_buyin_original:.1%}'
+ax1.text(0.02, 0.98, stats_text_original, transform=ax1.transAxes, fontsize=10,
+         verticalalignment='top', bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.8))
+
+# Plot modified strategy
+n2, bins2, patches2 = ax2.hist(final_balances_modified, bins=bins, edgecolor='black', alpha=0.7, color='steelblue')
+for i, patch in enumerate(patches2):
+    if bins2[i] < buy_in:
+        patch.set_facecolor('coral')
+    else:
+        patch.set_facecolor('lightgreen')
+
+ax2.axvline(x=buy_in, color='red', linestyle='--', linewidth=2.5, label='Buy-in ($30,000)')
+ax2.axvline(x=mean_modified, color='blue', linestyle='--', linewidth=2, alpha=0.8, label=f'Mean: ${mean_modified:,.0f}')
+ax2.axvline(x=median_modified, color='orange', linestyle='--', linewidth=2, alpha=0.8, label=f'Median: ${median_modified:,.0f}')
+ax2.set_xlabel('Final Account Balance ($)', fontsize=12)
+ax2.set_ylabel('Frequency', fontsize=12)
+ax2.set_title('Modified Strategy (25% at Risk)', fontsize=14, fontweight='bold')
+ax2.set_xscale('log')
+ax2.legend(loc='upper right', fontsize=9)
+ax2.grid(True, alpha=0.3, linestyle='-', linewidth=0.5, axis='y')
+
+stats_text_modified = f'Mean: ${mean_modified:,.0f}\nMedian: ${median_modified:,.0f}\nP(> $30k): {prob_above_buyin_modified:.1%}'
+ax2.text(0.02, 0.98, stats_text_modified, transform=ax2.transAxes, fontsize=10,
+         verticalalignment='top', bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.8))
+
+plt.tight_layout()
+plt.show()
+
+# Print comparison statistics
+print("=" * 70)
+print("COMPARISON: Original vs Modified (25% bet) Strategy")
+print("=" * 70)
+print(f"\nOriginal Strategy (100% at risk):")
+print(f"  Mean final balance: ${mean_original:,.2f}")
+print(f"  Median final balance: ${median_original:,.2f}")
+print(f"  Probability of ending above buy-in: {prob_above_buyin_original:.1%}")
+print(f"  Min final balance: ${np.min(final_balances_original):,.2f}")
+print(f"  Max final balance: ${np.max(final_balances_original):,.2f}")
+print(f"  25th percentile: ${np.percentile(final_balances_original, 25):,.2f}")
+print(f"  75th percentile: ${np.percentile(final_balances_original, 75):,.2f}")
+
+print(f"\nModified Strategy (25% at risk):")
+print(f"  Mean final balance: ${mean_modified:,.2f}")
+print(f"  Median final balance: ${median_modified:,.2f}")
+print(f"  Probability of ending above buy-in: {prob_above_buyin_modified:.1%}")
+print(f"  Min final balance: ${np.min(final_balances_modified):,.2f}")
+print(f"  Max final balance: ${np.max(final_balances_modified):,.2f}")
+print(f"  25th percentile: ${np.percentile(final_balances_modified, 25):,.2f}")
+print(f"  75th percentile: ${np.percentile(final_balances_modified, 75):,.2f}")
+
+print(f"\n" + "=" * 70)
+print("KEY INSIGHTS:")
+print("=" * 70)
+
+# Risk comparison (lower variance/volatility = less risky)
+std_original = np.std(final_balances_original)
+std_modified = np.std(final_balances_modified)
+cv_original = std_original / mean_original  # Coefficient of variation
+cv_modified = std_modified / mean_modified
+
+print(f"\nRisk Analysis (Coefficient of Variation):")
+print(f"  Original: {cv_original:.3f}")
+print(f"  Modified: {cv_modified:.3f}")
+if cv_original > cv_modified:
+    print(f"  → Original strategy is RISKIER (higher volatility)")
+else:
+    print(f"  → Modified strategy is RISKIER (higher volatility)")
+
+# Upside comparison (higher max/upper percentiles = better upside)
+print(f"\nUpside Potential:")
+print(f"  Original max: ${np.max(final_balances_original):,.2f}")
+print(f"  Modified max: ${np.max(final_balances_modified):,.2f}")
+if np.max(final_balances_original) > np.max(final_balances_modified):
+    print(f"  → Original strategy has BETTER UPSIDE (higher maximum)")
+else:
+    print(f"  → Modified strategy has BETTER UPSIDE (higher maximum)")
+
+print(f"\n  Original 75th percentile: ${np.percentile(final_balances_original, 75):,.2f}")
+print(f"  Modified 75th percentile: ${np.percentile(final_balances_modified, 75):,.2f}")
+
+# Probability comparison
+print(f"\nProbability of Profit:")
+print(f"  Original: {prob_above_buyin_original:.1%}")
+print(f"  Modified: {prob_above_buyin_modified:.1%}")
+if prob_above_buyin_modified > prob_above_buyin_original:
+    print(f"  → Modified strategy has HIGHER probability of profit")
+else:
+    print(f"  → Original strategy has HIGHER probability of profit")
+
+print("=" * 70)
 
 ```
 
+**Narrative and Comparison:**
+
+The comparison between the original strategy (100% at risk) and the modified strategy (25% at risk) reveals important trade-offs between risk and reward:
+
+**Which is Riskier?**
+
+The **original strategy is significantly riskier**. This is evident from several metrics:
+
+1. **Volatility**: The original strategy has much higher variance and coefficient of variation. The extreme swings (multiplying by 1.5 or 0.6) create massive dispersion in outcomes, with some simulations ending in pennies while others reach millions.
+
+2. **Probability of Loss**: The original strategy typically has a lower probability of ending above the buy-in compared to the modified strategy. This means you're more likely to lose money with the full-balance approach.
+
+3. **Downside Protection**: The modified strategy protects 75% of your balance each round, creating a "floor" that prevents catastrophic losses. Even with a string of tails, you can't lose more than 10% per round (0.90 multiplier), whereas the original can lose 40% per round (0.6 multiplier).
+
+**Which has Better Upside?**
+
+The **original strategy has better upside potential** in terms of maximum possible gains:
+
+1. **Maximum Outcomes**: When you get a favorable sequence of heads, betting the full balance compounds much faster. The 1.5× multiplier on the entire balance creates exponential growth that the modified strategy (1.125×) cannot match.
+
+2. **Upper Percentiles**: The 75th percentile and maximum values are typically much higher for the original strategy, reflecting the potential for extreme wins.
+
+3. **Mean vs Median**: The original strategy often has a higher mean (pulled up by extreme outliers), though the median may be lower, indicating that while most people lose, a few win big.
+
+**The Trade-off:**
+
+The modified strategy represents a **risk-reward trade-off**:
+- **Lower risk**: More consistent outcomes, higher probability of profit, protection against catastrophic losses
+- **Lower upside**: Cannot achieve the extreme gains possible with the original strategy
+- **Better for most players**: The higher probability of ending above buy-in makes it more attractive for risk-averse investors
+
+The original strategy is a **high-risk, high-reward gamble**:
+- **Higher risk**: Extreme volatility, lower probability of profit, potential for total loss
+- **Higher upside**: Potential for life-changing wins if you get lucky
+- **Better for risk-tolerant players**: Only suitable for those who can afford to lose everything
+
+**Practical Recommendation:**
+
+For most investors, the modified strategy (25% bet) is preferable because it offers a better balance: you're more likely to end with a profit while still participating in the game's upside. The original strategy is essentially a lottery ticket—most people lose, but a few win big. The modified strategy is more like a risky but potentially profitable investment.
+
+### 5.2) Modified Strategy (Bet 50% of Balance Each Round)
+
+Instead of having the full balance at risk with each coin flip, assume only 50% of your balance is gambled each year. Compare this to the original game. Which is riskier? Which has better upside?
+
+**Modified Strategy Mechanics:**
+- Only 50% of the current balance is gambled each year
+- 50% of the balance remains safe (not at risk)
+- If heads: the 50% portion gains 50%, so total balance = 50% + (50% × 1.5) = 125% of previous balance
+- If tails: the 50% portion loses 40%, so total balance = 50% + (50% × 0.6) = 80% of previous balance
+
+This means each flip multiplies the balance by either 1.25 (heads) or 0.80 (tails), compared to the original 1.5 or 0.6.
+
+```{python}
+#| label: q5-2-modified-50pct-py
+#| echo: true
+#| fig-cap: "Comparison of original vs modified (50% bet) strategy distributions"
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Set seed for reproducibility
+np.random.seed(123)
+
+# Simulation parameters
+buy_in = 30000
+n_periods = 50
+n_simulations = 100
+
+# Storage for final balances
+final_balances_original = []
+final_balances_modified_50 = []
+
+# Run 100 simulations for both strategies
+for sim in range(n_simulations):
+    # Original strategy: full balance at risk
+    balance_original = buy_in
+    balance_modified_50 = buy_in
+    
+    for period in range(n_periods):
+        # Same coin flip for both strategies (fair comparison)
+        coin_flip = np.random.binomial(1, 0.5)
+        
+        # Original strategy: full balance at risk
+        if coin_flip == 1:  # Heads
+            balance_original = balance_original * 1.5  # +50%
+        else:  # Tails
+            balance_original = balance_original * 0.6  # -40%
+        
+        # Modified strategy: only 50% at risk
+        # 50% safe + 50% gambled
+        if coin_flip == 1:  # Heads
+            # 50% safe + 50% * 1.5 = 50% + 75% = 125% of previous balance
+            balance_modified_50 = balance_modified_50 * 1.25
+        else:  # Tails
+            # 50% safe + 50% * 0.6 = 50% + 30% = 80% of previous balance
+            balance_modified_50 = balance_modified_50 * 0.80
+    
+    final_balances_original.append(balance_original)
+    final_balances_modified_50.append(balance_modified_50)
+
+final_balances_original = np.array(final_balances_original)
+final_balances_modified_50 = np.array(final_balances_modified_50)
+
+# Calculate statistics for both strategies
+mean_original = np.mean(final_balances_original)
+median_original = np.median(final_balances_original)
+prob_above_buyin_original = np.mean(final_balances_original > buy_in)
+prob_above_30k_original = np.mean(final_balances_original > 30000)
+
+mean_modified_50 = np.mean(final_balances_modified_50)
+median_modified_50 = np.median(final_balances_modified_50)
+prob_above_buyin_modified_50 = np.mean(final_balances_modified_50 > buy_in)
+prob_above_30k_modified_50 = np.mean(final_balances_modified_50 > 30000)
+
+# Create comparison plot
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 6))
+
+# Determine shared bins for comparison
+all_balances = np.concatenate([final_balances_original, final_balances_modified_50])
+bins = np.logspace(np.log10(min(all_balances)), np.log10(max(all_balances)), 50)
+
+# Plot original strategy
+n1, bins1, patches1 = ax1.hist(final_balances_original, bins=bins, edgecolor='black', alpha=0.7, color='steelblue')
+for i, patch in enumerate(patches1):
+    if bins1[i] < buy_in:
+        patch.set_facecolor('coral')
+    else:
+        patch.set_facecolor('lightgreen')
+
+ax1.axvline(x=buy_in, color='red', linestyle='--', linewidth=2.5, label='Buy-in ($30,000)')
+ax1.axvline(x=mean_original, color='blue', linestyle='--', linewidth=2, alpha=0.8, label=f'Mean: ${mean_original:,.0f}')
+ax1.axvline(x=median_original, color='orange', linestyle='--', linewidth=2, alpha=0.8, label=f'Median: ${median_original:,.0f}')
+ax1.set_xlabel('Final Account Balance ($)', fontsize=12)
+ax1.set_ylabel('Frequency', fontsize=12)
+ax1.set_title('Original Strategy (100% at Risk)', fontsize=14, fontweight='bold')
+ax1.set_xscale('log')
+ax1.legend(loc='upper right', fontsize=9)
+ax1.grid(True, alpha=0.3, linestyle='-', linewidth=0.5, axis='y')
+
+stats_text_original = f'Mean: ${mean_original:,.0f}\nMedian: ${median_original:,.0f}\nP(> $30k): {prob_above_30k_original:.1%}'
+ax1.text(0.02, 0.98, stats_text_original, transform=ax1.transAxes, fontsize=10,
+         verticalalignment='top', bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.8))
+
+# Plot modified strategy (50%)
+n2, bins2, patches2 = ax2.hist(final_balances_modified_50, bins=bins, edgecolor='black', alpha=0.7, color='steelblue')
+for i, patch in enumerate(patches2):
+    if bins2[i] < buy_in:
+        patch.set_facecolor('coral')
+    else:
+        patch.set_facecolor('lightgreen')
+
+ax2.axvline(x=buy_in, color='red', linestyle='--', linewidth=2.5, label='Buy-in ($30,000)')
+ax2.axvline(x=mean_modified_50, color='blue', linestyle='--', linewidth=2, alpha=0.8, label=f'Mean: ${mean_modified_50:,.0f}')
+ax2.axvline(x=median_modified_50, color='orange', linestyle='--', linewidth=2, alpha=0.8, label=f'Median: ${median_modified_50:,.0f}')
+ax2.set_xlabel('Final Account Balance ($)', fontsize=12)
+ax2.set_ylabel('Frequency', fontsize=12)
+ax2.set_title('Modified Strategy (50% at Risk)', fontsize=14, fontweight='bold')
+ax2.set_xscale('log')
+ax2.legend(loc='upper right', fontsize=9)
+ax2.grid(True, alpha=0.3, linestyle='-', linewidth=0.5, axis='y')
+
+stats_text_modified_50 = f'Mean: ${mean_modified_50:,.0f}\nMedian: ${median_modified_50:,.0f}\nP(> $30k): {prob_above_30k_modified_50:.1%}'
+ax2.text(0.02, 0.98, stats_text_modified_50, transform=ax2.transAxes, fontsize=10,
+         verticalalignment='top', bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.8))
+
+plt.tight_layout()
+plt.show()
+
+# Print comparison statistics
+print("=" * 70)
+print("COMPARISON: Original vs Modified (50% bet) Strategy")
+print("=" * 70)
+print(f"\nOriginal Strategy (100% at risk):")
+print(f"  Mean final balance: ${mean_original:,.2f}")
+print(f"  Median final balance: ${median_original:,.2f}")
+print(f"  Probability of ending above $30,000: {prob_above_30k_original:.3f} ({prob_above_30k_original:.1%})")
+print(f"  Min final balance: ${np.min(final_balances_original):,.2f}")
+print(f"  Max final balance: ${np.max(final_balances_original):,.2f}")
+print(f"  25th percentile: ${np.percentile(final_balances_original, 25):,.2f}")
+print(f"  75th percentile: ${np.percentile(final_balances_original, 75):,.2f}")
+
+print(f"\nModified Strategy (50% at risk):")
+print(f"  Mean final balance: ${mean_modified_50:,.2f}")
+print(f"  Median final balance: ${median_modified_50:,.2f}")
+print(f"  Probability of ending above $30,000: {prob_above_30k_modified_50:.3f} ({prob_above_30k_modified_50:.1%})")
+print(f"  Min final balance: ${np.min(final_balances_modified_50):,.2f}")
+print(f"  Max final balance: ${np.max(final_balances_modified_50):,.2f}")
+print(f"  25th percentile: ${np.percentile(final_balances_modified_50, 25):,.2f}")
+print(f"  75th percentile: ${np.percentile(final_balances_modified_50, 75):,.2f}")
+
+print(f"\n" + "=" * 70)
+print("KEY INSIGHTS:")
+print("=" * 70)
+
+# Risk comparison (lower variance/volatility = less risky)
+std_original = np.std(final_balances_original)
+std_modified_50 = np.std(final_balances_modified_50)
+cv_original = std_original / mean_original  # Coefficient of variation
+cv_modified_50 = std_modified_50 / mean_modified_50
+
+print(f"\nRisk Analysis (Coefficient of Variation):")
+print(f"  Original: {cv_original:.3f}")
+print(f"  Modified (50%): {cv_modified_50:.3f}")
+if cv_original > cv_modified_50:
+    print(f"  → Original strategy is RISKIER (higher volatility)")
+else:
+    print(f"  → Modified strategy is RISKIER (higher volatility)")
+
+# Upside comparison (higher max/upper percentiles = better upside)
+print(f"\nUpside Potential:")
+print(f"  Original max: ${np.max(final_balances_original):,.2f}")
+print(f"  Modified (50%) max: ${np.max(final_balances_modified_50):,.2f}")
+if np.max(final_balances_original) > np.max(final_balances_modified_50):
+    print(f"  → Original strategy has BETTER UPSIDE (higher maximum)")
+else:
+    print(f"  → Modified strategy has BETTER UPSIDE (higher maximum)")
+
+print(f"\n  Original 75th percentile: ${np.percentile(final_balances_original, 75):,.2f}")
+print(f"  Modified (50%) 75th percentile: ${np.percentile(final_balances_modified_50, 75):,.2f}")
+
+# Probability comparison
+print(f"\nProbability of Profit (P > $30,000):")
+print(f"  Original: {prob_above_30k_original:.3f} ({prob_above_30k_original:.1%})")
+print(f"  Modified (50%): {prob_above_30k_modified_50:.3f} ({prob_above_30k_modified_50:.1%})")
+if prob_above_30k_modified_50 > prob_above_30k_original:
+    print(f"  → Modified strategy has HIGHER probability of profit")
+    print(f"  → Difference: +{prob_above_30k_modified_50 - prob_above_30k_original:.1%} points")
+else:
+    print(f"  → Original strategy has HIGHER probability of profit")
+    print(f"  → Difference: +{prob_above_30k_original - prob_above_30k_modified_50:.1%} points")
+
+print("=" * 70)
+
+```
+
+**Narrative and Comparison:**
+
+The comparison between the original strategy (100% at risk) and the modified strategy (50% at risk) reveals important trade-offs between risk and reward:
+
+**Which is Riskier?**
+
+The **original strategy is significantly riskier**. This is evident from several metrics:
+
+1. **Volatility**: The original strategy has much higher variance and coefficient of variation. The extreme swings (multiplying by 1.5 or 0.6) create massive dispersion in outcomes, with some simulations ending in pennies while others reach millions.
+
+2. **Probability of Loss**: The original strategy typically has a lower probability of ending above $30,000 compared to the modified strategy. This means you're more likely to lose money with the full-balance approach.
+
+3. **Downside Protection**: The modified strategy protects 50% of your balance each round, creating a "floor" that prevents catastrophic losses. Even with a string of tails, you can't lose more than 20% per round (0.80 multiplier), whereas the original can lose 40% per round (0.6 multiplier).
+
+**Which has Better Upside?**
+
+The **original strategy has better upside potential** in terms of maximum possible gains:
+
+1. **Maximum Outcomes**: When you get a favorable sequence of heads, betting the full balance compounds much faster. The 1.5× multiplier on the entire balance creates exponential growth that the modified strategy (1.25×) cannot match.
+
+2. **Upper Percentiles**: The 75th percentile and maximum values are typically much higher for the original strategy, reflecting the potential for extreme wins.
+
+3. **Mean vs Median**: The original strategy often has a higher mean (pulled up by extreme outliers), though the median may be lower, indicating that while most people lose, a few win big.
+
+**The Trade-off:**
+
+The modified strategy (50% bet) represents a **moderate risk-reward trade-off** compared to both the original (100%) and the more conservative 25% bet strategy:
+
+- **Moderate risk reduction**: More consistent outcomes than the original, higher probability of profit, better protection against catastrophic losses
+- **Moderate upside reduction**: Cannot achieve the extreme gains possible with the original strategy, but still allows for substantial growth
+- **Middle ground**: Balances risk and reward between the original (high risk/high reward) and the 25% strategy (low risk/low reward)
+
+**Practical Recommendation:**
+
+The 50% bet strategy offers a **balanced approach** that reduces risk while maintaining meaningful upside potential. It's more suitable for investors who want to participate in the game's growth potential but are unwilling to risk their entire balance on each flip. Compared to the 25% strategy, it offers higher potential returns at the cost of slightly higher risk.
+
 ### 6) Briefly Explain Your Findings From The Previous Step in Light of A Concept Known as the "Kelly Criterion"
- 
+
 What is the Kelly Criterion and how does it relate to the modified strategy?
+
+**What is the Kelly Criterion?**
+
+The Kelly Criterion is a mathematical formula that determines the optimal fraction of your bankroll to bet in order to maximize long-term exponential growth. Developed by John L. Kelly Jr. in 1956, it's widely used in gambling, investing, and portfolio management.
+
+The Kelly Criterion maximizes the expected logarithmic utility (or geometric mean return) over time. The key insight is that betting too little leaves money on the table, while betting too much increases the risk of ruin and reduces long-term growth due to the asymmetric impact of losses.
+
+**Kelly Formula for This Game:**
+
+In our investment game:
+- **Win probability (p):** 0.5 (heads)
+- **Win multiplier:** +50% (gain 50% of bet amount)
+- **Loss multiplier:** -40% (lose 40% of bet amount)
+
+If we bet a fraction **f** of our balance each round:
+- **Heads:** Balance becomes `1 + 0.5f` (we gain 50% of the bet fraction)
+- **Tails:** Balance becomes `1 - 0.4f` (we lose 40% of the bet fraction)
+
+The expected log return is:
+$$\text{E}[\log(\text{return})] = 0.5 \times \log(1 + 0.5f) + 0.5 \times \log(1 - 0.4f)$$
+
+To find the optimal fraction, we take the derivative and set it to zero:
+$$\frac{d}{df} \text{E}[\log(\text{return})] = \frac{0.5 \times 0.5}{1 + 0.5f} - \frac{0.5 \times 0.4}{1 - 0.4f} = 0$$
+
+Solving for **f***:
+$$\frac{0.25}{1 + 0.5f^*} = \frac{0.2}{1 - 0.4f^*}$$
+$$0.25(1 - 0.4f^*) = 0.2(1 + 0.5f^*)$$
+$$0.25 - 0.1f^* = 0.2 + 0.1f^*$$
+$$0.05 = 0.2f^*$$
+$$f^* = 0.25 = 25\%$$
+
+**The Kelly-optimal bet size is 25% of your balance each round.**
+
+```{python}
+#| label: q6-kelly-criterion-py
+#| echo: true
+#| fig-cap: "Expected log return vs bet fraction, showing Kelly-optimal fraction"
+
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.optimize import minimize_scalar
+
+# Define the expected log return function
+def expected_log_return(f):
+    """
+    Calculate expected log return for betting fraction f
+    f: fraction of balance to bet (0 to 1)
+    """
+    if f <= 0 or f >= 2.5:  # f must be < 2.5 to avoid negative balance on loss
+        return -np.inf
+    p = 0.5  # probability of heads
+    win_mult = 1 + 0.5 * f  # balance after win
+    loss_mult = 1 - 0.4 * f  # balance after loss
+    if loss_mult <= 0:
+        return -np.inf
+    return p * np.log(win_mult) + (1 - p) * np.log(loss_mult)
+
+# Calculate Kelly-optimal fraction numerically
+result = minimize_scalar(lambda f: -expected_log_return(f), bounds=(0.001, 2.4), method='bounded')
+kelly_fraction = result.x
+kelly_return = expected_log_return(kelly_fraction)
+
+# Calculate for different bet fractions
+fractions = np.linspace(0.01, 2.4, 1000)
+returns = [expected_log_return(f) for f in fractions]
+
+# Find returns for specific strategies we tested
+f_25 = 0.25
+f_50 = 0.50
+f_100 = 1.00
+return_25 = expected_log_return(f_25)
+return_50 = expected_log_return(f_50)
+return_100 = expected_log_return(f_100)
+
+# Create plot
+fig, ax = plt.subplots(figsize=(12, 7))
+
+# Plot the curve
+ax.plot(fractions, returns, linewidth=2.5, color='steelblue', label='Expected Log Return')
+
+# Mark Kelly-optimal point
+ax.plot(kelly_fraction, kelly_return, 'ro', markersize=12, label=f'Kelly-Optimal (f* = {kelly_fraction:.1%})', zorder=5)
+
+# Mark strategies we tested
+ax.plot(f_25, return_25, 'go', markersize=10, label=f'25% Strategy (f = {f_25:.0%})', zorder=4)
+ax.plot(f_50, return_50, 'mo', markersize=10, label=f'50% Strategy (f = {f_50:.0%})', zorder=4)
+ax.plot(f_100, return_100, 'co', markersize=10, label=f'100% Strategy (f = {f_100:.0%})', zorder=4)
+
+# Add vertical lines
+ax.axvline(x=kelly_fraction, color='red', linestyle='--', alpha=0.5, linewidth=1.5)
+ax.axvline(x=f_25, color='green', linestyle='--', alpha=0.5, linewidth=1)
+ax.axvline(x=f_50, color='magenta', linestyle='--', alpha=0.5, linewidth=1)
+ax.axvline(x=f_100, color='cyan', linestyle='--', alpha=0.5, linewidth=1)
+
+# Styling
+ax.set_xlabel('Bet Fraction (f)', fontsize=12)
+ax.set_ylabel('Expected Log Return', fontsize=12)
+ax.set_title('Kelly Criterion: Expected Log Return vs Bet Fraction', fontsize=14, fontweight='bold')
+ax.grid(True, alpha=0.3, linestyle='-', linewidth=0.5)
+ax.legend(loc='best', fontsize=10)
+ax.set_xlim(0, 2.5)
+
+# Add text annotations
+ax.text(kelly_fraction + 0.05, kelly_return, f'Optimal\n({kelly_fraction:.1%})', 
+        fontsize=9, verticalalignment='bottom', bbox=dict(boxstyle='round', facecolor='yellow', alpha=0.7))
+ax.text(f_100 + 0.05, return_100, f'Original\n({f_100:.0%})', 
+        fontsize=9, verticalalignment='bottom', bbox=dict(boxstyle='round', facecolor='lightblue', alpha=0.7))
+
+plt.tight_layout()
+plt.show()
+
+# Print results
+print("=" * 70)
+print("KELLY CRITERION ANALYSIS")
+print("=" * 70)
+print(f"\nKelly-Optimal Bet Fraction: {kelly_fraction:.4f} ({kelly_fraction:.1%})")
+print(f"Expected Log Return at Kelly Fraction: {kelly_return:.6f}")
+print(f"\nComparison of Strategies:")
+print(f"  25% Strategy:  Expected Log Return = {return_25:.6f}")
+print(f"  50% Strategy:  Expected Log Return = {return_50:.6f}")
+print(f"  100% Strategy: Expected Log Return = {return_100:.6f}")
+print(f"\nDeviation from Optimal:")
+print(f"  25% Strategy:  {abs(f_25 - kelly_fraction):.1%} from optimal (Expected log return: {return_25:.6f})")
+print(f"  50% Strategy:  {abs(f_50 - kelly_fraction):.1%} from optimal (Expected log return: {return_50:.6f})")
+print(f"  100% Strategy: {abs(f_100 - kelly_fraction):.1%} from optimal (Expected log return: {return_100:.6f})")
+print("=" * 70)
+
+```
+
+**How the Kelly Criterion Relates to Our Findings:**
+
+Our simulation results align perfectly with Kelly Criterion theory:
+
+1. **The 25% Strategy is Kelly-Optimal:**
+   - The Kelly Criterion predicts that betting 25% of your balance each round maximizes long-term growth
+   - This matches the modified strategy we tested in section 5.1
+   - The 25% strategy should have the highest expected log return, which translates to better long-term performance
+
+2. **Why 100% (Original) is Suboptimal:**
+   - Betting your entire balance (100%) is **over-betting** according to Kelly
+   - While it offers the highest potential upside, it also has:
+     - Higher volatility (risk)
+     - Lower probability of profit
+     - Higher risk of ruin
+   - The expected log return is lower because losses compound more severely when you bet too much
+
+3. **Why 50% is Better than 100% but Worse than 25%:**
+   - The 50% strategy is still **over-betting** compared to Kelly-optimal
+   - It reduces risk compared to 100%, but doesn't maximize long-term growth
+   - It's a compromise between risk and return, but not the theoretically optimal choice
+
+4. **The Kelly Criterion Explains the Trade-offs:**
+   - **Under-betting (< 25%):** Safe but leaves growth potential on the table
+   - **Kelly-optimal (25%):** Maximizes long-term growth rate
+   - **Over-betting (> 25%):** Increases risk and volatility, reduces long-term growth despite higher potential upside
+
+**Practical Implications:**
+
+The Kelly Criterion provides a mathematical foundation for our empirical findings:
+
+- The **25% strategy** (Kelly-optimal) should show the best balance of risk and return over many periods
+- The **100% strategy** (over-betting) has extreme volatility and lower probability of profit, consistent with Kelly's prediction that over-betting reduces long-term growth
+- The **50% strategy** (also over-betting) is better than 100% but still suboptimal
+
+**Important Caveats:**
+
+While the Kelly Criterion is theoretically optimal for maximizing long-term growth, in practice:
+- It assumes you can play indefinitely (we only play 50 rounds)
+- It assumes you can bet fractional amounts (we can)
+- It doesn't account for risk aversion or utility functions beyond log utility
+- Many practitioners use "fractional Kelly" (e.g., 50% of Kelly) to reduce volatility while maintaining most of the growth benefit
+
+**Conclusion:**
+
+The Kelly Criterion mathematically validates our simulation findings: the 25% bet strategy is theoretically optimal for maximizing long-term growth, while the 100% strategy is over-aggressive and reduces expected long-term returns despite offering higher potential upside. The 50% strategy represents a middle ground that's better than 100% but still suboptimal compared to the Kelly-optimal 25%.
 
 
 ## Professional Presentation (From Grading TLDR)
