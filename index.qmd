@@ -4,27 +4,11 @@ subtitle: "Starter Template with To-Dos"
 format:
   html: default
 execute:
-  echo: true
+  echo: false
   eval: true
 ---
 
 # 🎲 Simulation Challenge - Starter Template
-
-:::: {.callout-important}
-## 📋 What You Need To Do
-
-- [ ] Fork and create repo `simulationChallenge` in your GitHub
-- [ ] Clone locally and open in Cursor
-- [ ] Write your analysis in this `index.qmd`
-- [ ] Render to HTML (`quarto render` or Render button)
-- [ ] Push HTML to your repo and enable GitHub Pages
-- [ ] Share your site: `https://raushon.github.io/simulationChallenge/`
-:::
-
-:::: {.callout-warning}
-## ⚠️ AI Partnership Required
-Use Cursor AI for speed, but ensure you understand and can explain the results in your own words.  Verify cursor's calculations as investment simulation is tricky.
-:::
 
 ## The Investment Game (Brief)
 
@@ -100,7 +84,7 @@ $$\text{Gain} = \frac{\$31,500 - \$30,000}{\$30,000} \times 100\% = 5\%$$
 
 ```{python}
 #| label: q1-expected-value-py
-#| echo: true
+#| echo: false
 
 # Compute expected value after one flip
 buy_in = 30000
@@ -138,7 +122,7 @@ Below is a single simulated path showing how the account balance evolves over ti
 
 ```{python}
 #| label: q2-single-sim-py
-#| echo: true
+#| echo: false
 #| fig-cap: "Single simulation path of account balance"
 import numpy as np
 import matplotlib.pyplot as plt
@@ -169,7 +153,7 @@ for period in range(n_periods):
     balance_history.append(current_balance)
 
 # Create the time series plot using matplotlib OO style
-fig, ax = plt.subplots(figsize=(10, 6))
+fig, ax = plt.subplots(figsize=(8, 6))
 
 # Create time axis
 time_periods = np.arange(len(balance_history))
@@ -181,11 +165,11 @@ ax.plot(time_periods, balance_history, linewidth=2, color='steelblue', label='Ac
 ax.axhline(y=buy_in, color='red', linestyle='--', linewidth=2, label='Initial Buy-in ($30,000)')
 
 # Styling
-ax.set_xlabel('Time Period (Years)', fontsize=12)
-ax.set_ylabel('Account Balance ($)', fontsize=12)
-ax.set_title('Account Balance Over Time: Single Simulation Run', fontsize=14, fontweight='bold')
+ax.set_xlabel('Time Period (Years)', fontsize=8)
+ax.set_ylabel('Account Balance ($)', fontsize=8)
+ax.set_title('Account Balance Over Time: Single Simulation Run', fontsize=10, fontweight='bold')
 ax.grid(True, alpha=0.3, linestyle='-', linewidth=0.5)
-ax.legend(loc='best', fontsize=10)
+ax.legend(loc='best', fontsize=9)
 
 # Use log scale for y-axis to better visualize exponential growth/decay
 ax.set_yscale('log')
@@ -218,7 +202,7 @@ Running 100 simulations provides a comprehensive view of the range of possible o
 
 ```{python}
 #| label: q3-dist-100-py
-#| echo: true
+#| echo: false
 #| fig-cap: "Distribution of final balances across 100 simulations"
 import numpy as np
 import matplotlib.pyplot as plt
@@ -258,7 +242,7 @@ median_balance = np.median(final_balances)
 prob_above_buyin = np.mean(final_balances > buy_in)
 
 # Create histogram with matplotlib OO style
-fig, ax = plt.subplots(figsize=(10, 6))
+fig, ax = plt.subplots(figsize=(8, 6))
 
 # Create bins for histogram (log scale for better visualization)
 bins = np.logspace(np.log10(min(final_balances)), np.log10(max(final_balances)), 50)
@@ -319,7 +303,7 @@ Report the probability estimate and interpret its practical meaning.
 
 ```{python}
 #| label: q4-prob-original-py
-#| echo: true
+#| echo: false
 
 # Re-run simulations to ensure we have the data
 import numpy as np
@@ -375,7 +359,7 @@ This means each flip multiplies the balance by either 1.125 (heads) or 0.90 (tai
 
 ```{python}
 #| label: q5-modified-25pct-py
-#| echo: true
+#| echo: false
 #| fig-cap: "Comparison of original vs modified (25% bet) strategy distributions"
 
 import numpy as np
@@ -571,7 +555,7 @@ This means each flip multiplies the balance by either 1.25 (heads) or 0.80 (tail
 
 ```{python}
 #| label: q5-2-modified-50pct-py
-#| echo: true
+#| echo: false
 #| fig-cap: "Comparison of original vs modified (50% bet) strategy distributions"
 
 import numpy as np
@@ -772,29 +756,3 @@ The Kelly Criterion is a mathematical formula that determines the optimal fracti
 
 The Kelly Criterion mathematically validates our simulation findings: the 25% bet strategy is theoretically optimal for maximizing long-term growth, while the 100% strategy is over-aggressive and reduces expected long-term returns despite offering higher potential upside. The 50% strategy represents a middle ground that's better than 100% but still suboptimal compared to the Kelly-optimal 25%.
 ::::
-
-
-
-## Professional Presentation (From Grading TLDR)
-
-- **Clear narrative:** tell the story succinctly (aim for a 1–5 minute read)
-- **Focus on insights:** risk profiles, counter-intuitive results, practical implications
-- **Professional style:** concise writing, clean visuals, hide code where appropriate (`echo: false`)
-- **Human interpretation:** explain what results mean for real decisions
-
-## Submission Checklist ✅
-
-- [ ] Quarto document written with narrative and results
-- [ ] Rendered to HTML successfully
-- [ ] Repository `simulationChallenge` created on GitHub
-- [ ] HTML committed and pushed
-- [ ] GitHub Pages enabled (Deploy from a branch → main → /(root))
-- [ ] Site accessible at `https://[your-username].github.io/simulationChallenge/`
-
-## Tips
-
-- Set random seeds for reproducibility
-- Use object-oriented plotting with `matplotlib`
-- Keep figures readable and labeled; prefer professional styling
-- Commit early and often; render locally before pushing
-
